@@ -9,7 +9,7 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
-st.title("Student Survey (Placeholder)")
+st.title("Student Survey")
 st.write(
     "This is a demo page showcasing every Streamlit question/input type. "
     "Fill it out and submit to see the collected responses."
