@@ -65,6 +65,20 @@ def classification_nav():
     )
 
 
+# ---- Role: student ----------------------------------------------------------
+
+def student_home_nav():
+    st.sidebar.page_link(
+        "pages/40_Student_Home.py", label="Student Home", icon="🏠"
+    )
+
+
+def student_survey_nav():
+    st.sidebar.page_link(
+        "pages/41_Student_Survey.py", label="Student Survey", icon="📝"
+    )
+
+
 # ---- Role: administrator ----------------------------------------------------
 
 def admin_home_nav():
@@ -110,6 +124,10 @@ def SideBarLinks(show_home=False):
             prediction_nav()
             api_test_nav()
             classification_nav()
+
+        if st.session_state["role"] == "student":
+            student_home_nav()
+            student_survey_nav()
 
         if st.session_state["role"] == "administrator":
             admin_home_nav()
