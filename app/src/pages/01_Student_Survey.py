@@ -20,7 +20,7 @@ st.write(
 with st.form("student_survey", clear_on_submit=False):
 
     # ---- Majors -------------------------------------------------------------
-    st.subheader("Which majors are you interested in?")
+    st.subheader("Degree Preferences")
     majors = st.multiselect(
         "Multi-select — which topics interest you?",
         options=["Accounting", "Anthropology", "Architecture", "Art", "Biology",
@@ -35,6 +35,9 @@ with st.form("student_survey", clear_on_submit=False):
                  "Theater"],
     )
 
+    degree_level = st.radio("What degree do you want to finish with?",
+                            options = ["Bachelor's Degree", "Master's Degree", "Doctorate's Degree"])
+
     # ---- Location preferences -----------------------------------------------
     st.subheader("Location Preferences")
     country = st.text_input("What country do you live in?",
@@ -48,9 +51,13 @@ with st.form("student_survey", clear_on_submit=False):
     campus_type = st.selectbox("What type of campus do you prefer?",
                                options=["Urban", "Suburban", "Rural"],
                                help="The setting of the campus")
-    campus_size = st.slider("How large of a campus do you prefer? (Student population)",
-                             min_value=100, max_value=50000, value=(5000, 15000), step=500,
-                             help="The size of the campus in terms of student population")
+    #campus_size = st.slider("How large of a campus do you prefer? (Student population)",
+     #                        min_value=100, max_value=50000, value=(5000, 15000), step=500,
+     #                        help="The size of the campus in terms of student population")
+
+    campus_size = st.radio("What size campus would you prefer?", 
+                            options =["Small (<5,000 students)", "Medium (5,000-15,000 students)", "Large (>15,000 students)"])
+
     
     # ---- Financial preferences ----------------------------------------------
     st.subheader("Financial Preferences")
@@ -67,6 +74,7 @@ with st.form("student_survey", clear_on_submit=False):
 if submitted:
     responses = {
         "majors": majors,
+        "degree_level": degree_level,
         "country": country,
         "proximity_km": list(proximity),
         "campus_type": campus_type,
@@ -74,5 +82,9 @@ if submitted:
         "budget_usd": budget,
         "financial_aid": financial_aid,
     }
-    st.success("Thanks for completing the survey! Here are your responses:")
-    st.json(responses)
+
+    st.session_state["survey_responses"] = responses
+    st.switch_page("pages/02_Student_Data.py")
+
+
+
