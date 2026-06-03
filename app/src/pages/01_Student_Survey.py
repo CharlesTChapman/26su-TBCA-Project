@@ -21,7 +21,7 @@ with st.form("student_survey", clear_on_submit=False):
 
     # ---- Majors -------------------------------------------------------------
     st.subheader("Degree Preferences")
-    majors = st.multiselect(
+    majors = st.selectbox(
         "Multi-select — which topics interest you?",
         options=["Accounting", "Anthropology", "Architecture", "Art", "Biology",
                  "Business", "Chemistry", "Communications", "Computer Science",
