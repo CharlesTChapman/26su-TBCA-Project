@@ -2372,3 +2372,28 @@ INSERT INTO labor_observations (geo, time, nace_r2, sector, employment_thousands
 INSERT INTO labor_observations (geo, time, nace_r2, sector, employment_thousands, employment_thousands_lag1, graduates, graduates_lag1, emp_change, working_age_pop_thousands, employment_rate, grad_ratio, absorption_rate, predicted) VALUES ('SK', 2021.0, 'R-U', 'Arts, Entertainment & Other', 55.8, 56.88, 3173.0, 2986.0, -1.08, 59666.451, 0.000935, 56.863799, -0.000362, 57.818653);
 INSERT INTO labor_observations (geo, time, nace_r2, sector, employment_thousands, employment_thousands_lag1, graduates, graduates_lag1, emp_change, working_age_pop_thousands, employment_rate, grad_ratio, absorption_rate, predicted) VALUES ('SK', 2022.0, 'R-U', 'Arts, Entertainment & Other', 58.37, 55.8, 2844.0, 3173.0, 2.57, 59666.451, 0.000978, 48.723659, 0.00081, 56.729186);
 INSERT INTO labor_observations (geo, time, nace_r2, sector, employment_thousands, employment_thousands_lag1, graduates, graduates_lag1, emp_change, working_age_pop_thousands, employment_rate, grad_ratio, absorption_rate, predicted) VALUES ('SK', 2023.0, 'R-U', 'Arts, Entertainment & Other', 60.46, 58.37, 2826.0, 2844.0, 2.09, 59666.451, 0.001013, 46.741647, 0.000735, 59.321713);
+-- Model 1 weights
+CREATE TABLE IF NOT EXISTS model1_params (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    coef_lag1   DOUBLE NOT NULL,
+    intercept   DOUBLE NOT NULL,
+    mean_lag1   DOUBLE NOT NULL,
+    scale_lag1  DOUBLE NOT NULL
+);
+INSERT INTO model1_params (coef_lag1, intercept, mean_lag1, scale_lag1)
+VALUES (1450.92095196, 722.1839917936694, 715.47249707, 1438.31352529);
+
+-- Model 2 weights
+CREATE TABLE IF NOT EXISTS model2_params (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    coef_time       DOUBLE NOT NULL,
+    coef_graduates  DOUBLE NOT NULL,
+    coef_lag1       DOUBLE NOT NULL,
+    intercept       DOUBLE NOT NULL,
+    mean_graduates  DOUBLE NOT NULL,
+    mean_lag1       DOUBLE NOT NULL,
+    scale_graduates DOUBLE NOT NULL,
+    scale_lag1      DOUBLE NOT NULL
+);
+INSERT INTO model2_params (coef_time, coef_graduates, coef_lag1, intercept, mean_graduates, mean_lag1, scale_graduates, scale_lag1)
+VALUES (-0.59461836, -0.8840954, 13.16175616, 1205.768485392164, 20188.04279015, 715.47249707, 37549.96159868, 1438.31352529);
