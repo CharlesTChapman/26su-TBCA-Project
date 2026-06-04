@@ -1,6 +1,6 @@
 CREATE TABLE mytable(
    name           VARCHAR(97) NOT NULL PRIMARY KEY
-  ,city           VARCHAR(37)
+  ,city           VARCHAR(100)
   ,student_fees   NUMERIC(20,11)
   ,highest_degree NUMERIC(3,1)
   ,staff_fte      NUMERIC(19,14)

@@ -6,7 +6,7 @@ import logging
 from backend.db_connection import init_app as init_db
 from backend.simple.simple_routes import simple_routes
 from backend.university_explorer_routes.university_explorer_routes import university_explorer_routes
-
+from backend.simple.labor_routes import labor_routes  
 
 def create_app():
     app = Flask(__name__)
@@ -41,5 +41,6 @@ def create_app():
     # University Explorer routes are registered at the root (no prefix) so the
     # paths match the route matrix exactly (e.g. /universities, /students).
     app.register_blueprint(university_explorer_routes)
+    app.register_blueprint(labor_routes)
 
     return app
