@@ -103,7 +103,7 @@ In **Environment Variables**, add the following. Generate fresh values per team 
 | `SECRET_KEY`          | `openssl rand -hex 32` output (run locally, paste here)    |
 | `MYSQL_ROOT_PASSWORD` | `openssl rand -hex 24` output                              |
 | `DB_USER`             | `root`                                                     |
-| `DB_NAME`             | `ngo_db` (or the team's chosen database name)              |
+| `DB_NAME`             | `university_explorer` (or the team's chosen database name) |
 
 Note: `DB_HOST`, `DB_PORT`, and service hostnames are hardcoded in `docker-compose.prod.yaml`; nothing else to set.
 
