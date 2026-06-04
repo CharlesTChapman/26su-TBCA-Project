@@ -1,8 +1,6 @@
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import requests
-import json
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -24,16 +22,17 @@ class university_ranking_model:
             raise ValueError('No data found...')
         return rows
 
-    def predict(self, student_budget: float, student_degree: int, student_size: int) -> pd.DataFrame:
+    def predict(self, student_budget: float, student_degree: int, student_size: int, top_n: int = None) -> dict:
         """Ranks all universities by cosine similarity to the student's preferences.
         
         Args:
             student_budget: max acceptable student fees in EUR
             student_degree: highest degree level (1=bachelors, 2=masters, 3=doctoral)
-            student_size: preferred university size on a 1-10 scale
+            student_size:   preferred university size on a 1-10 scale
+            top_n:          number of results to return (default None = all)
         
         Returns:
-            DataFrame with columns name, city, match_number sorted by best match first.
+            Dict keyed by rank with values {name, city, match_number}.
         """
         budget = float(student_budget)
         degree = int(student_degree)
@@ -71,28 +70,20 @@ class university_ranking_model:
             'cosine_score': cosine_scores
         })
 
-        ranked = results_df.sort_values(by='cosine_score', ascending=False)
-        ranked = ranked.reset_index(drop=True)
+        ranked = results_df.sort_values(by='cosine_score', ascending=False).reset_index(drop=True)
         ranked.index = ranked.index + 1
-        ranked['match_number'] = (ranked['cosine_score'] * 100).round(2).astype(str)
 
-        output = ranked[['name', 'city', 'match_number']]
-        output.index.name = 'rank'
+        if top_n is not None:
+            ranked = ranked.head(top_n)
+
+        output = {
+            int(rank): {
+                'name': row['name'],
+                'city': row['city'],
+                'match_number': round(row['cosine_score'] * 100, 2)
+            }
+            for rank, row in ranked.iterrows()
+        }
 
         current_app.logger.info(f'Predicted university rankings for student with budget {budget}, degree {degree}, size {size}')
         return output
-
-    def get_top_matches(self, student_budget: float, student_degree: int, student_size: int, top_n: int = 10) -> pd.DataFrame:
-        """Returns the top n universities ranked by cosine similarity.
-        
-        Args:
-            student_budget: max acceptable student fees in EUR
-            student_degree: highest degree level (1=bachelors, 2=masters, 3=doctoral)
-            student_size:   preferred university size on a 1-10 scale
-            top_n:          number of results to return (default 10)
-        
-        Returns:
-            DataFrame with the top n matches.
-        """
-        ranked = self.predict(student_budget, student_degree, student_size)
-        return ranked.head(top_n)
