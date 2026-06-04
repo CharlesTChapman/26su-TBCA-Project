@@ -50,7 +50,7 @@ with left:
 
         st.divider()
         if st.button("View More", key="view_more_results", use_container_width=True):
-            st.switch_page("pages/03_Student_Data_All_Universities.py")
+            st.switch_page("pages/03_Student_Data_Universities_List.py")
 
 with right:
 

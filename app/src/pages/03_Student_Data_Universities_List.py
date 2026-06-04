@@ -9,7 +9,7 @@ st.set_page_config(layout='wide')
 
 SideBarLinks()
 
-st.title("All Personalized University Recommendations")
+st.title("Personalized University Recommendations")
 
 results = [
     {"rank": 1, "name": "KU Leuven", "country": "Belgium", "size": "Large", "type": "Public", "tuition": 1200}, 
