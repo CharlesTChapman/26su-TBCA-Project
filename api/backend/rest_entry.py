@@ -5,7 +5,7 @@ import logging
 
 from backend.db_connection import init_app as init_db
 from backend.simple.simple_routes import simple_routes
-from backend.ngos.ngo_routes import ngo_bp
+from backend.university_explorer_routes.university_explorer_routes import university_explorer_routes
 
 
 def create_app():
@@ -38,6 +38,8 @@ def create_app():
     # simple_routes has no prefix intentionally — it serves root-level demo routes (/, /playlist, etc.)
     app.logger.info("create_app(): registering blueprints")
     app.register_blueprint(simple_routes)
-    app.register_blueprint(ngo_bp, url_prefix="/ngo")
+    # University Explorer routes are registered at the root (no prefix) so the
+    # paths match the route matrix exactly (e.g. /universities, /students).
+    app.register_blueprint(university_explorer_routes)
 
     return app
