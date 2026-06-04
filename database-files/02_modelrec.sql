@@ -6,6 +6,7 @@ CREATE TABLE mytable(
   ,staff_fte      NUMERIC(19,14)
   ,web_pages      VARCHAR(48)
 );
+
 INSERT INTO mytable(name,city,student_fees,highest_degree,staff_fte,web_pages) VALUES ('University of Vienna','Vienna',17131218.28,3.0,6378.5469,NULL);
 INSERT INTO mytable(name,city,student_fees,highest_degree,staff_fte,web_pages) VALUES ('University of Graz','Graz',3628120.01,3.0,2738.7869,NULL);
 INSERT INTO mytable(name,city,student_fees,highest_degree,staff_fte,web_pages) VALUES ('University of Innsbruck','Innsbruck',3890197.44,3.0,3122.686,NULL);
