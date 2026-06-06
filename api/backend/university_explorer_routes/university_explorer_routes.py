@@ -76,7 +76,7 @@ def create_student():
             """INSERT INTO student (id, first_name, last_name, email, address, major)
                VALUES (%s, %s, %s, %s, %s, %s)""",
             (student_id, data["first_name"], data["last_name"], data["email"],
-             data.get("address"), data.get("major")),
+             data.get("address"), data.get("major")), # type: ignore
         )
         db.commit()
         return jsonify({"id": student_id, "message": "Student created"}), 201
@@ -322,3 +322,66 @@ def delete_pros_cons(student_id, university_id):
     except Error as e:
         current_app.logger.error(f"DELETE pros_cons failed: {e}")
         return error_response("Could not delete pros/cons", 400)
+
+#Survery From
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["GET"])
+def get_survey_form(student_id):
+    """Get a student's survery responses"""
+    current_app.logger.info(f"GET /survey_form/{student_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT student_id, student_budget, student_degree_level, student_size, created_at, updated_at FROM survey_form WHERE student_id = %s",
+            (student_id,),
+        )
+        record = cursor.fetchone()
+        if record is None:
+            return error_response("Survey not found", 404)
+        return jsonify(record), 200
+    except Error as e:
+        current_app.logger.error(f"GET /survey_form/{student_id} failed: {e}")
+        return error_response("Could not retrieve survey form")
+    
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["POST"])
+def create_survey_form(student_id):
+    """Create a student's survey and mark as completed"""
+    current_app.logger.info(f"POST /survey_form/{student_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """INSERT INTO survey_form (student_id, student_budget, student_degree_level, student_size)
+               VALUES (%s, %s, %s, %s)""",
+            (student_id, data.get("student_budget"), data.get("student_degree_level"), data.get("student_size")),
+        )
+        db.commit()
+        return jsonify({"message": "Survey form created"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST /survey_form/{student_id} failed: {e}")
+        return error_response("Could not create survey form", 400)
+    
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["PUT"])
+def update_survey_form(student_id):
+    """Update a student's survey responses."""
+    current_app.logger.info(f"PUT /survey_form/{student_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE survey_form
+                  SET student_budget       = COALESCE(%s, student_budget),
+                      student_degree_level = COALESCE(%s, student_degree_level),
+                      student_size         = COALESCE(%s, student_size),
+                      updated_at           = CURRENT_TIMESTAMP
+                WHERE student_id = %s""",
+            (data.get("student_budget"), data.get("student_degree_level"), data.get("student_size"), student_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Survey form not found", 404)
+        return jsonify({"message": "Survey form updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT /survey_form/{student_id} failed: {e}")
+        return error_response("Could not update survey form", 400)

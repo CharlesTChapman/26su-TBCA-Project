@@ -53,11 +53,11 @@ col1, col2, col3 = st.columns(3)
 # functionality, we put a button on the screen that the user
 # can click to MIMIC logging in as that mock user.
 with col1:
-    st.subheader("Maria")
+    st.subheader("Student Portal")
     st.caption("Student")
     st.write("Browse universities, compare tuition costs, and explore programs across Europe.")
 
-    if st.button('Log in as Maria',
+    if st.button('Log in as a Student',
                 type='primary',
                 use_container_width=True):
         # when user clicks the button, they are now considered authenticated
@@ -66,7 +66,7 @@ with col1:
         st.session_state['role'] = 'student'
         # we add the first name of the user (so it can be displayed on
         # subsequent pages).
-        st.session_state['first_name'] = 'Maria'
+        st.session_state['first_name'] = 'Student'
         # finally, we ask streamlit to switch to another page, in this case, the
         # landing page for this particular user type
         logger.info("Logging in as Student Persona")

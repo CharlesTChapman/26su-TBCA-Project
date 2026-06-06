@@ -14,7 +14,7 @@ class university_ranking_model:
         with get_db().cursor(dictionary=True) as cursor:
             cursor.execute(
                 'SELECT name, city, student_fees, highest_degree, staff_fte, web_pages '
-                'FROM modelrec '
+                'FROM mytable '
                 'ORDER BY name'
             )
             rows = cursor.fetchall()
@@ -22,13 +22,13 @@ class university_ranking_model:
             raise ValueError('No data found...')
         return rows
 
-    def predict(self, student_budget: float, student_degree: int, student_size: int, top_n: int = None) -> dict:
+    def predict(self, student_budget: float, student_degree: int, student_size: int, top_n: int = None) -> dict: # type: ignore
         """Ranks all universities by cosine similarity to the student's preferences.
         
         Args:
             student_budget: max acceptable student fees in EUR
             student_degree: highest degree level (1=bachelors, 2=masters, 3=doctoral)
-            student_size:   preferred university size on a 1-10 scale
+            student_size:   preferred university size on a 1-3 scale (1 = Small, 2, = Medium, 3 = Large)
             top_n:          number of results to return (default None = all)
         
         Returns:

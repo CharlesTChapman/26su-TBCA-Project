@@ -28,9 +28,12 @@ CREATE TABLE budget_manager (
 );
 
 CREATE TABLE survey_form (
-    student_id  INTEGER NOT NULL,
-    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_id           INTEGER NOT NULL,
+    created_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at           DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_budget       FLOAT,
+    student_degree_level INTEGER,
+    student_size         INTEGER,
     PRIMARY KEY (student_id),
     FOREIGN KEY (student_id) REFERENCES student(id)
 );
