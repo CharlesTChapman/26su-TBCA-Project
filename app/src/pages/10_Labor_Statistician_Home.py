@@ -28,27 +28,53 @@ except Exception as e:
     st.error(f'Could not reach API: {e}')
     st.stop()
 
-# sidebar filters
-st.sidebar.header('Filters')
-countries = sorted(df['geo'].unique())
-sectors   = sorted(df['sector'].unique())
-selected_countries = st.sidebar.multiselect('Countries', countries, default=countries)
-selected_sectors   = st.sidebar.multiselect('Sectors', sectors, default=sectors)
+COUNTRY_NAMES = {
+    'AT': 'Austria', 
+    'BE': 'Belgium',
+    'BG': 'Bulgaria', 
+    'CY': 'Cyprus',
+    'CZ': 'Czech Republic', 
+    'DE': 'Germany', 
+    'DK': 'Denmark', 
+    'EE': 'Estonia',
+    'EL': 'Greece', 
+    'ES': 'Spain', 
+    'FI': 'Finland', 
+    'FR': 'France',
+    'HR': 'Croatia', 
+    'HU': 'Hungary', 
+    'IE': 'Ireland', 
+    'IT': 'Italy',
+    'LT': 'Lithuania', 
+    'LU': 'Luxembourg', 
+    'LV': 'Latvia', 
+    'MT': 'Malta',
+    'NL': 'Netherlands', 
+    'PL': 'Poland', 
+    'PT': 'Portugal', 
+    'RO': 'Romania',
+    'SE': 'Sweden', 
+    'SI': 'Slovenia', 
+    'SK': 'Slovakia'
+}
 
-filtered = df[
-    df['geo'].isin(selected_countries) &
-    df['sector'].isin(selected_sectors)
-]
+sectors   = sorted(df['sector'].unique())
+countries = sorted(df['geo'].unique())
+
+
 
 # ── prediction widget ─────────────────────────────────────────
 st.subheader('Run a Prediction')
 st.caption('Select a country and sector — values are pulled from the most recent year in the data.')
 
+
+
 col1, col2 = st.columns(2)
 
 with col1:
     st.markdown('**Model 1: Employment Level**')
-    m1_country = st.selectbox('Country', countries, key='m1_country')
+    m1_country = st.selectbox('Country', countries, format_func = COUNTRY_NAMES.get, key = 'm1_country') #type: ignore
+    
     m1_sector  = st.selectbox('Sector', sectors, key='m1_sector')
 
     # auto-fill lag from most recent row for that country/sector
@@ -64,7 +90,7 @@ with col1:
 
 with col2:
     st.markdown('**Model 2: Employment Change**')
-    m2_country = st.selectbox('Country', countries, key='m2_country')
+    m2_country = st.selectbox('Country', countries, format_func = COUNTRY_NAMES.get, key = 'm2_country') #type: ignore
     m2_sector  = st.selectbox('Sector', sectors, key='m2_sector')
 
     # auto-fill from most recent row
@@ -106,7 +132,7 @@ tab1, tab2, tab3, tab4 = st.tabs(['Employment Trend', 'Country Comparison', 'Abs
 with tab1:
     t1_y = st.selectbox('Y axis', NUMERIC_COLS,
                          format_func=lambda c: LABEL_MAP[c], key='t1_y')
-    trend = filtered.groupby(['time','sector'])[t1_y].sum().reset_index()
+    trend = df.groupby(['time','sector'])[t1_y].sum().reset_index()
     fig1 = px.line(trend, x='time', y=t1_y, color='sector', markers=True,
                    labels={'time':'Year', t1_y: LABEL_MAP[t1_y], 'sector':'Sector'})
     st.plotly_chart(fig1, use_container_width=True)
@@ -118,7 +144,7 @@ with tab2:
     latest = df[df['time'] == latest_year].groupby('geo', as_index=False).agg(
         val=(t2_y, 'mean')
     )
-    latest = latest[latest['geo'].isin(selected_countries)].sort_values('val')
+    latest = latest.sort_values('val')
     fig2 = px.bar(latest, x='val', y='geo', orientation='h',
                   color='val', color_continuous_scale='Teal',
                   title=f'{LABEL_MAP[t2_y]} by Country ({latest_year})',
@@ -126,7 +152,7 @@ with tab2:
     st.plotly_chart(fig2, use_container_width=True)
 
 with tab3:
-    absorption = filtered.groupby('sector')['absorption_rate'].median().reset_index().sort_values('absorption_rate')
+    absorption = df.groupby('sector')['absorption_rate'].median().reset_index().sort_values('absorption_rate')
     fig3 = px.bar(absorption, x='absorption_rate', y='sector', orientation='h',
                   color='absorption_rate', color_continuous_scale=['red','green'],
                   labels={'absorption_rate':'Median New Jobs per Prior-Year Graduate','sector':'Sector'})
@@ -147,7 +173,7 @@ with tab4:
     with c3:
         t4_color = st.selectbox('Color by', ['sector','geo'], key='t4_color')
 
-    fig4 = px.scatter(filtered, x=t4_x, y=t4_y, color=t4_color,
+    fig4 = px.scatter(df, x=t4_x, y=t4_y, color=t4_color,
                       opacity=0.55, hover_data=['geo','time','sector'],
                       labels={t4_x: LABEL_MAP[t4_x], t4_y: LABEL_MAP[t4_y]})
     st.plotly_chart(fig4, use_container_width=True)
