@@ -13,7 +13,7 @@ class university_ranking_model:
         """Fetches all universities from the university table in the database."""
         with get_db().cursor(dictionary=True) as cursor:
             cursor.execute(
-                'SELECT name, location AS city, student_fees, highest_degree, staff_fte, web_pages '
+                'SELECT name, location AS city, per_student_fees, highest_degree, staff_fte, web_pages '
                 'FROM university '
                 'ORDER BY name'
             )
@@ -40,15 +40,15 @@ class university_ranking_model:
 
         universities = self._get_universities()
         model_df = pd.DataFrame(universities)
-        keeping_cols = ['student_fees', 'highest_degree', 'staff_fte']
-
+        keeping_cols = ['per_student_fees', 'highest_degree', 'staff_fte']
+        model_df = model_df.dropna(subset=keeping_cols).reset_index(drop=True)
         X_mat = model_df[keeping_cols].to_numpy()
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X_mat)
         staff_min = model_df['staff_fte'].min()
         staff_max = model_df['staff_fte'].max()
 
-        student_staff = staff_min + (size - 1) * (staff_max - staff_min) / 9
+        student_staff = staff_min + (size - 1) * (staff_max - staff_min) / 2
         student_input = np.array([[budget, degree, student_staff]])
         student_input_scaled = scaler.transform(student_input)
 

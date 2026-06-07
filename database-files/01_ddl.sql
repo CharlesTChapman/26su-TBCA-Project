@@ -23,6 +23,7 @@ CREATE TABLE university (
     name           VARCHAR(100) NOT NULL UNIQUE,
     location       VARCHAR(255),
     student_fees   FLOAT,
+    per_student_fees FLOAT,
     highest_degree FLOAT,
     staff_fte      INTEGER,
     web_pages      VARCHAR(50)
