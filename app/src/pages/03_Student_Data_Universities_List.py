@@ -57,3 +57,9 @@ for university in results:
             if uni_id is not None:
                 requests.post(f"{API}/favorites/{student_id}/{uni_id}", timeout=10)
                 st.rerun()
+        if uni_id is not None and st.button(
+                "ℹ️ Details", key=f"det_rec_{university['name']}",
+                use_container_width=True):
+            st.session_state['selected_university_id'] = uni_id
+            st.session_state['university_detail_origin'] = "pages/03_Student_Data_Universities_List.py"
+            st.switch_page("pages/06_Student_Data_Unique_University_Info.py")
