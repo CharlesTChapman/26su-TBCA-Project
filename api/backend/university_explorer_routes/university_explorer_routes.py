@@ -47,6 +47,34 @@ def get_university(university_id):
         return error_response("Could not retrieve university")
 
 
+# ---- Labor statisticians ----------------------------------------------------
+@university_explorer_routes.route("/labor_statisticians", methods=["GET"])
+def get_labor_statisticians():
+    """Get all labor statisticians."""
+    current_app.logger.info("GET /labor_statisticians")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute("SELECT id, first_name, last_name, email FROM labor_statistician")
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /labor_statisticians failed: {e}")
+        return error_response("Could not retrieve labor statisticians")
+
+
+# ---- Budget managers --------------------------------------------------------
+@university_explorer_routes.route("/budget_managers", methods=["GET"])
+def get_budget_managers():
+    """Get all budget managers."""
+    current_app.logger.info("GET /budget_managers")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute("SELECT id, first_name, last_name, email FROM budget_manager")
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /budget_managers failed: {e}")
+        return error_response("Could not retrieve budget managers")
+
+
 # ---- Students ---------------------------------------------------------------
 @university_explorer_routes.route("/students", methods=["GET"])
 def get_students():
