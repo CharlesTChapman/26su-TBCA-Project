@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 # import the main streamlit library as well
 # as SideBarLinks function from src/modules folder
 import streamlit as st
+import time
 import requests
 from modules.nav import SideBarLinks
 
@@ -62,12 +63,53 @@ st.session_state['authenticated'] = False
 
 SideBarLinks(show_home=True)
 
+# Rotating text that transitions through a list of titles
+NAMES = [
+    "The Best Choice Academics 🎓",
+    "Think Before Committing Analytics 📊",
+    "True Budget Clarity Accounting 💶",
+]
+
+@st.fragment(run_every="5s")
+def rotating_banner():
+    idx = int(time.time() // 5) % len(NAMES)
+    text = NAMES[idx]
+    n = len(text)
+    # Emphasize the T/B/C/A letters
+    html = "".join(
+        f'<span class="tbca">{c}</span>' if c.isupper() else c for c in text
+    )
+    st.markdown(
+        f"""
+        <style>
+        .rotating-text {{
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 2.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #dfe3ee;
+            width: {n}ch;
+            animation: type 1.4s steps({n}, end);
+        }}
+        .rotating-text .tbca {{
+            color: #5b86e0;
+            font-weight: 900;
+        }}
+        @keyframes type  {{ from {{ width: 0; }} to {{ width: {n}ch; }} }}
+        </style>
+        <div class="rotating-text" key="{idx}">{html}</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 # -----------------------------------------------------------------------------
 # PAGE CONTENT
 # -----------------------------------------------------------------------------
 
 logger.info("Loading the Home page of the app")
-st.title("🎓 TBCAcademics")
+rotating_banner()
 st.subheader("Who would you like to log in as?")
 
 st.divider()
