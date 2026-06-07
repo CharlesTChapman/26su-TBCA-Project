@@ -47,7 +47,7 @@ else:
 st.title("My Portal")
 
 st.write(
-   "Here lies all yor information regarding universities decisions. Good Luck!"
+   "Here lies all your information regarding universities decisions. Good Luck!"
 )
 
 

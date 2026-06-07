@@ -19,7 +19,7 @@ favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorites = favorites.json() if favorites.status_code == 200 else []
 
 if not favorites:
-    st.info("You haven't favorited any universities yet. Add some from your recommendations.")
+    st.write("You haven't favorited any universities yet. Add some from your recommendations.")
 
 for fav in favorites:
     col1, col2 = st.columns([3, 1])
