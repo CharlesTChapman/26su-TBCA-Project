@@ -10,11 +10,11 @@ from backend.db_connection import get_db
 class university_ranking_model:
 
     def _get_universities(self) -> list:
-        """Fetches all universities from the modelrec table in the database."""
+        """Fetches all universities from the university table in the database."""
         with get_db().cursor(dictionary=True) as cursor:
             cursor.execute(
-                'SELECT name, city, student_fees, highest_degree, staff_fte, web_pages '
-                'FROM mytable '
+                'SELECT name, location AS city, student_fees, highest_degree, staff_fte, web_pages '
+                'FROM university '
                 'ORDER BY name'
             )
             rows = cursor.fetchall()

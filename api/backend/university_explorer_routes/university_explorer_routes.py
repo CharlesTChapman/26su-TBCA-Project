@@ -21,7 +21,10 @@ def get_universities():
     current_app.logger.info("GET /universities")
     try:
         cursor = get_db().cursor(dictionary=True)
-        cursor.execute("SELECT id, name, location FROM university")
+        cursor.execute(
+            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "FROM university"
+        )
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         current_app.logger.error(f"GET /universities failed: {e}")
@@ -35,7 +38,8 @@ def get_university(university_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location FROM university WHERE id = %s",
+            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "FROM university WHERE id = %s",
             (university_id,),
         )
         university = cursor.fetchone()
@@ -157,7 +161,8 @@ def get_favorites(student_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            """SELECT u.id, u.name, u.location, f.created_at
+            """SELECT u.id, u.name, u.location, u.student_fees, u.highest_degree,
+                      u.staff_fte, f.created_at
                  FROM favorites f
                  JOIN university u ON u.id = f.university_id
                 WHERE f.student_id = %s""",

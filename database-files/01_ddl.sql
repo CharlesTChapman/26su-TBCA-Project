@@ -15,9 +15,13 @@ CREATE TABLE labor_statistician (
 );
 
 CREATE TABLE university (
-    id          INTEGER PRIMARY KEY,
-    name        VARCHAR(100) NOT NULL,
-    location    VARCHAR(255)
+    id             INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name           VARCHAR(100) NOT NULL UNIQUE,
+    location       VARCHAR(255),
+    student_fees   FLOAT,
+    highest_degree FLOAT,
+    staff_fte      INTEGER,
+    web_pages      VARCHAR(50)
 );
 
 CREATE TABLE budget_manager (
