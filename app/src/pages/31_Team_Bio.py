@@ -9,8 +9,9 @@ BIOS = {
     "Tyler": {
         "image": "assets/dev_headshots/tyler_gladu_headshot.png",
         "role": "Database Design & Front End",
-        "bio": "Tyler led database design and implementation and contributed to "
-               "the front end and user interface.",
+        "bio": """Hi! My name is Tyler Gladu. I'm from Upton, MA, 
+                and I led database design and implementation and contributed to 
+               the front end and user interface.""",
         "linkedin": "https://www.linkedin.com/in/tyler-gladu-bb7783239/",
     },
     "Charlie": {
