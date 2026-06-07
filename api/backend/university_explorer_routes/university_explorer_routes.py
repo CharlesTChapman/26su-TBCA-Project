@@ -356,7 +356,7 @@ def delete_pros_cons(student_id, university_id):
         current_app.logger.error(f"DELETE pros_cons failed: {e}")
         return error_response("Could not delete pros/cons", 400)
 
-#Survery From
+# ---- Survey Form ------------------------------------------------------------
 @university_explorer_routes.route("/survey_form/<int:student_id>", methods=["GET"])
 def get_survey_form(student_id):
     """Get a student's survery responses"""
@@ -364,7 +364,11 @@ def get_survey_form(student_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT student_id, student_budget, student_degree_level, student_size, created_at, updated_at FROM survey_form WHERE student_id = %s",
+            """SELECT student_id, student_budget, student_degree_level, student_size,
+                      student_major, student_country, student_proximity_min,
+                      student_proximity_max, student_campus_type, student_financial_aid,
+                      created_at, updated_at
+                 FROM survey_form WHERE student_id = %s""",
             (student_id,),
         )
         record = cursor.fetchone()
@@ -384,9 +388,15 @@ def create_survey_form(student_id):
         db = get_db()
         cursor = db.cursor()
         cursor.execute(
-            """INSERT INTO survey_form (student_id, student_budget, student_degree_level, student_size)
-               VALUES (%s, %s, %s, %s)""",
-            (student_id, data.get("student_budget"), data.get("student_degree_level"), data.get("student_size")),
+            """INSERT INTO survey_form
+                   (student_id, student_budget, student_degree_level, student_size,
+                    student_major, student_country, student_proximity_min,
+                    student_proximity_max, student_campus_type, student_financial_aid)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (student_id, data.get("student_budget"), data.get("student_degree_level"),
+             data.get("student_size"), data.get("student_major"), data.get("student_country"),
+             data.get("student_proximity_min"), data.get("student_proximity_max"),
+             data.get("student_campus_type"), data.get("student_financial_aid")),
         )
         db.commit()
         return jsonify({"message": "Survey form created"}), 201
@@ -404,12 +414,21 @@ def update_survey_form(student_id):
         cursor = db.cursor()
         cursor.execute(
             """UPDATE survey_form
-                  SET student_budget       = COALESCE(%s, student_budget),
-                      student_degree_level = COALESCE(%s, student_degree_level),
-                      student_size         = COALESCE(%s, student_size),
-                      updated_at           = CURRENT_TIMESTAMP
+                  SET student_budget        = COALESCE(%s, student_budget),
+                      student_degree_level  = COALESCE(%s, student_degree_level),
+                      student_size          = COALESCE(%s, student_size),
+                      student_major         = COALESCE(%s, student_major),
+                      student_country       = COALESCE(%s, student_country),
+                      student_proximity_min = COALESCE(%s, student_proximity_min),
+                      student_proximity_max = COALESCE(%s, student_proximity_max),
+                      student_campus_type   = COALESCE(%s, student_campus_type),
+                      student_financial_aid = COALESCE(%s, student_financial_aid),
+                      updated_at            = CURRENT_TIMESTAMP
                 WHERE student_id = %s""",
-            (data.get("student_budget"), data.get("student_degree_level"), data.get("student_size"), student_id),
+            (data.get("student_budget"), data.get("student_degree_level"), data.get("student_size"),
+             data.get("student_major"), data.get("student_country"), data.get("student_proximity_min"),
+             data.get("student_proximity_max"), data.get("student_campus_type"),
+             data.get("student_financial_aid"), student_id),
         )
         db.commit()
         if cursor.rowcount == 0:

@@ -22,9 +22,15 @@ size_map = {"Small (<5,000 students)": 1,
 
 st.title("Student Survey")
 
+# The student is chosen on the Home page and stored in session state
+student_id = st.session_state.get('student_id')
+if not student_id:
+    st.warning("No student selected. Please choose a student on the home page first.")
+    if st.button('Back to Home', type='primary'):
+        st.switch_page('Home.py')
+    st.stop()
 
-# A form batches all widgets and only triggers a rerun on submit, so the
-# page does not refresh on every individual interaction.
+
 with st.form("student_survey", clear_on_submit=False):
 
     # ---- Majors -------------------------------------------------------------
@@ -80,12 +86,16 @@ with st.form("student_survey", clear_on_submit=False):
 
 # ---- Results ----------------------------------------------------------------
 if submitted:
-    student_id = st.session_state.get('student_id')
-
     survey_data = {
         "student_budget": float(budget),
         "student_degree_level": degree_map[degree_level],
-        "student_size": size_map[campus_size]
+        "student_size": size_map[campus_size],
+        "student_major": majors,
+        "student_country": country,
+        "student_proximity_min": int(proximity[0]),
+        "student_proximity_max": int(proximity[1]),
+        "student_campus_type": campus_type,
+        "student_financial_aid": bool(financial_aid),
     }
 
     # Check if survey already exists

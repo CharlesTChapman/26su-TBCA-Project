@@ -78,11 +78,6 @@ col1, col2, col3 = st.columns(3)
 
 # Users mimic logging in by selecting their account from a list of all accounts
 with col1:
-    st.subheader("Student Portal")
-    st.caption("Student")
-    st.write("Browse universities, compare tuition costs, and explore programs across Europe.")
-
-    if st.button('Log in as a Student',
     st.subheader("Student")
     st.caption("Browse universities, compare tuition costs, and explore programs across Europe.")
     if students:
@@ -110,6 +105,7 @@ with col1:
         # when user clicks the button, they are now considered authenticated
         st.session_state['authenticated'] = True
         # set the role of the current user
+        st.session_state['role'] = 'student'
         # add the first name of the user (so it can be displayed on subsequent pages).
         st.session_state['first_name'] = st.session_state.get('selected_student', {}).get('first_name', 'Student')
         # switch to the next page

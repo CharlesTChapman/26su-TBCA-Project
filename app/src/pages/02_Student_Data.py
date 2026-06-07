@@ -13,6 +13,14 @@ SideBarLinks()
 API = "http://web-api:4000"
 
 student_id = st.session_state.get('student_id') # Pulls current student id in session
+
+# The student is chosen on the Home page and stored in session state.
+if not student_id:
+    st.warning("No student selected. Please choose a student on the home page first.")
+    if st.button('Back to Home', type='primary'):
+        st.switch_page('Home.py')
+    st.stop()
+
 student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=10)
 
 if student_survey.status_code != 200:
