@@ -1,5 +1,8 @@
 -- MOCK DATA
 
+-- Read this script as UTF-8 so any non-ASCII data imports correctly.
+SET NAMES utf8mb4;
+
 -- ----Students----------------------------------------------------------------
 INSERT INTO student (id, first_name, last_name, email, address, major) VALUES
   (1,  'Maria',    'Lopez',      'marialopez@gmail.com',             '3808 Spaight Way',         'Psychology'),

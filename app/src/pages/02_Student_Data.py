@@ -81,7 +81,7 @@ with left:
                 st.write(f"{university['city']} | {university['match']}% match")
             with col2:
                 is_fav = uni_id in favorite_ids
-                if st.button("★ Favorited" if is_fav else "☆ Favorite",
+                if st.button("⭐ Favorited" if is_fav else "☆ Favorite",
                              key=f"rec_{university['name']}", use_container_width=True):
                     if uni_id is not None:
                         toggle_favorite(uni_id)
@@ -102,7 +102,7 @@ with right:
                 st.subheader(fav["name"])
                 st.write(fav.get("location") or "")
             with col2:
-                if st.button("★ Remove", key=f"fav_{fav['id']}", use_container_width=True):
+                if st.button("⭐ Remove", key=f"fav_{fav['id']}", use_container_width=True):
                     toggle_favorite(fav["id"])
         st.divider()
         if st.button("View More", key="view_more_favorites", use_container_width=True):
