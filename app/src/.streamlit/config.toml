@@ -13,10 +13,15 @@
 showSidebarNavigation = false
 
 [theme]
-# Setting some basic config options related to the theme of the app
-base="light"
-primaryColor="#4028dfff"
-font="sans serif"
+base                     = "dark"       # "light" or "dark" — the starting palette
+primaryColor             = "#123293"    # accent: buttons, sliders, active widgets (kept)
+backgroundColor          = "#0b1020"    # deep navy canvas (shares the primary's blue undertone)
+secondaryBackgroundColor = "#161d31"    # slate-navy panels: sidebar, inputs, st.container
+textColor                = "#dfe3ee"    # soft cool-white body text (high contrast on navy)
+linkColor                = "#5b86e0"    # lighter blue tint of the primary — readable on dark
+font                     = "serif"      # "sans serif" | "serif" | "monospace"
+borderColor      = "#2a3450"
+showWidgetBorder = true
 
 [server]
 runOnSave = true
