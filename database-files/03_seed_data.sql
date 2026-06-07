@@ -2,7 +2,7 @@
 
 -- ----Students----------------------------------------------------------------
 INSERT INTO student (id, first_name, last_name, email, address, major) VALUES
-  (1,  'Tadeo',    'Daskiewicz', 'tdaskiewicz0@spiegel.de',          '3808 Spaight Way',         'Psychology'),
+  (1,  'Maria',    'Lopez',      'marialopez@gmail.com',             '3808 Spaight Way',         'Psychology'),
   (2,  'Corrina',  'Simmens',    'csimmens1@deliciousdays.com',      '53501 Porter Plaza',       'History'),
   (3,  'Bert',     'Hugnin',     'bhugnin2@cbsnews.com',             '75 Clyde Gallagher Pass',  'History'),
   (4,  'Olympia',  'Dewsbury',   'odewsbury3@ucla.edu',              '3456 Green Ridge Park',    'English Literature'),

@@ -21,7 +21,10 @@ def get_universities():
     current_app.logger.info("GET /universities")
     try:
         cursor = get_db().cursor(dictionary=True)
-        cursor.execute("SELECT id, name, location FROM university")
+        cursor.execute(
+            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "FROM university"
+        )
         return jsonify(cursor.fetchall()), 200
     except Error as e:
         current_app.logger.error(f"GET /universities failed: {e}")
@@ -35,7 +38,8 @@ def get_university(university_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location FROM university WHERE id = %s",
+            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "FROM university WHERE id = %s",
             (university_id,),
         )
         university = cursor.fetchone()
@@ -104,7 +108,7 @@ def create_student():
             """INSERT INTO student (id, first_name, last_name, email, address, major)
                VALUES (%s, %s, %s, %s, %s, %s)""",
             (student_id, data["first_name"], data["last_name"], data["email"],
-             data.get("address"), data.get("major")),
+             data.get("address"), data.get("major")), # type: ignore
         )
         db.commit()
         return jsonify({"id": student_id, "message": "Student created"}), 201
@@ -185,7 +189,8 @@ def get_favorites(student_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            """SELECT u.id, u.name, u.location, f.created_at
+            """SELECT u.id, u.name, u.location, u.student_fees, u.highest_degree,
+                      u.staff_fte, f.created_at
                  FROM favorites f
                  JOIN university u ON u.id = f.university_id
                 WHERE f.student_id = %s""",
@@ -350,3 +355,85 @@ def delete_pros_cons(student_id, university_id):
     except Error as e:
         current_app.logger.error(f"DELETE pros_cons failed: {e}")
         return error_response("Could not delete pros/cons", 400)
+
+# ---- Survey Form ------------------------------------------------------------
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["GET"])
+def get_survey_form(student_id):
+    """Get a student's survery responses"""
+    current_app.logger.info(f"GET /survey_form/{student_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT student_id, student_budget, student_degree_level, student_size,
+                      student_major, student_country, student_proximity_min,
+                      student_proximity_max, student_campus_type, student_financial_aid,
+                      created_at, updated_at
+                 FROM survey_form WHERE student_id = %s""",
+            (student_id,),
+        )
+        record = cursor.fetchone()
+        if record is None:
+            return error_response("Survey not found", 404)
+        return jsonify(record), 200
+    except Error as e:
+        current_app.logger.error(f"GET /survey_form/{student_id} failed: {e}")
+        return error_response("Could not retrieve survey form")
+    
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["POST"])
+def create_survey_form(student_id):
+    """Create a student's survey and mark as completed"""
+    current_app.logger.info(f"POST /survey_form/{student_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """INSERT INTO survey_form
+                   (student_id, student_budget, student_degree_level, student_size,
+                    student_major, student_country, student_proximity_min,
+                    student_proximity_max, student_campus_type, student_financial_aid)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (student_id, data.get("student_budget"), data.get("student_degree_level"),
+             data.get("student_size"), data.get("student_major"), data.get("student_country"),
+             data.get("student_proximity_min"), data.get("student_proximity_max"),
+             data.get("student_campus_type"), data.get("student_financial_aid")),
+        )
+        db.commit()
+        return jsonify({"message": "Survey form created"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST /survey_form/{student_id} failed: {e}")
+        return error_response("Could not create survey form", 400)
+    
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["PUT"])
+def update_survey_form(student_id):
+    """Update a student's survey responses."""
+    current_app.logger.info(f"PUT /survey_form/{student_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE survey_form
+                  SET student_budget        = COALESCE(%s, student_budget),
+                      student_degree_level  = COALESCE(%s, student_degree_level),
+                      student_size          = COALESCE(%s, student_size),
+                      student_major         = COALESCE(%s, student_major),
+                      student_country       = COALESCE(%s, student_country),
+                      student_proximity_min = COALESCE(%s, student_proximity_min),
+                      student_proximity_max = COALESCE(%s, student_proximity_max),
+                      student_campus_type   = COALESCE(%s, student_campus_type),
+                      student_financial_aid = COALESCE(%s, student_financial_aid),
+                      updated_at            = CURRENT_TIMESTAMP
+                WHERE student_id = %s""",
+            (data.get("student_budget"), data.get("student_degree_level"), data.get("student_size"),
+             data.get("student_major"), data.get("student_country"), data.get("student_proximity_min"),
+             data.get("student_proximity_max"), data.get("student_campus_type"),
+             data.get("student_financial_aid"), student_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Survey form not found", 404)
+        return jsonify({"message": "Survey form updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT /survey_form/{student_id} failed: {e}")
+        return error_response("Could not update survey form", 400)

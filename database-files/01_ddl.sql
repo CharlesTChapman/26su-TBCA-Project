@@ -15,9 +15,13 @@ CREATE TABLE labor_statistician (
 );
 
 CREATE TABLE university (
-    id          INTEGER PRIMARY KEY,
-    name        VARCHAR(100) NOT NULL,
-    location    VARCHAR(255)
+    id             INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name           VARCHAR(100) NOT NULL UNIQUE,
+    location       VARCHAR(255),
+    student_fees   FLOAT,
+    highest_degree FLOAT,
+    staff_fte      INTEGER,
+    web_pages      VARCHAR(50)
 );
 
 CREATE TABLE budget_manager (
@@ -28,9 +32,18 @@ CREATE TABLE budget_manager (
 );
 
 CREATE TABLE survey_form (
-    student_id  INTEGER NOT NULL,
-    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_id             INTEGER NOT NULL,
+    created_at             DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at             DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    student_budget         FLOAT,
+    student_degree_level   INTEGER,
+    student_size           INTEGER,
+    student_major          VARCHAR(100),
+    student_country        VARCHAR(100),
+    student_proximity_min  INTEGER,
+    student_proximity_max  INTEGER,
+    student_campus_type    VARCHAR(20),
+    student_financial_aid  BOOLEAN,
     PRIMARY KEY (student_id),
     FOREIGN KEY (student_id) REFERENCES student(id)
 );
