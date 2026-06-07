@@ -1,9 +1,6 @@
-##################################################
-# This is the main/entry-point file for the
-# sample application for your project
-##################################################
+#### MAIN ENTRYPOINT FOR APP ####
 
-# Set up basic logging infrastructure
+# Set up logging infrastructure
 import logging
 logging.basicConfig(format='%(filename)s:%(lineno)s:%(levelname)s -- %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -11,29 +8,63 @@ logger = logging.getLogger(__name__)
 # import the main streamlit library as well
 # as SideBarLinks function from src/modules folder
 import streamlit as st
+import requests
 from modules.nav import SideBarLinks
 
-# streamlit supports regular and wide layout (how the controls
-# are organized/displayed on the screen).
+# Base URL for the REST API
+API = 'http://web-api:4000'
+
+
+@st.cache_data(ttl=300)
+def load_students():
+    """Fetch all students from the API's GET /students route."""
+    r = requests.get(f'{API}/students')
+    r.raise_for_status()
+    return r.json()
+
+
+@st.cache_data(ttl=300)
+def load_labor_statisticians():
+    """Fetch all labor statisticians from the API's GET /labor_statisticians route."""
+    r = requests.get(f'{API}/labor_statisticians')
+    r.raise_for_status()
+    return r.json()
+
+
+@st.cache_data(ttl=300)
+def load_budget_managers():
+    """Fetch all budget managers from the API's GET /budget_managers route."""
+    r = requests.get(f'{API}/budget_managers')
+    r.raise_for_status()
+    return r.json()
+
+
+def _load(loader, label):
+    """Run a loader, logging and surfacing any API error and returning []."""
+    try:
+        return loader()
+    except Exception as e:
+        logger.error(f"Could not load {label} from API: {e}")
+        st.error(f"Could not load {label} from the API: {e}")
+        return []
+
+
+# Load the people for each persona from the database
+students = _load(load_students, "students")
+labor_statisticians = _load(load_labor_statisticians, "labor statisticians")
+budget_managers = _load(load_budget_managers, "budget managers")
+
+# wide streamlit layout
 st.set_page_config(layout='wide')
 
-# If a user is at this page, we assume they are not
-# authenticated.  So we change the 'authenticated' value
-# in the streamlit session_state to false.
+# Users on this page are not yet authenticated
 st.session_state['authenticated'] = False
 
-# Use the SideBarLinks function from src/modules/nav.py to control
-# the links displayed on the left-side panel.
-# IMPORTANT: ensure src/.streamlit/config.toml sets
-# showSidebarNavigation = false in the [client] section
 SideBarLinks(show_home=True)
 
-# ***************************************************
-#    The major content of this page
-# ***************************************************
-
-
-
+# -----------------------------------------------------------------------------
+# PAGE CONTENT
+# -----------------------------------------------------------------------------
 
 logger.info("Loading the Home page of the app")
 st.title("🎓 TBCAcademics")
@@ -41,60 +72,107 @@ st.subheader("Who would you like to log in as?")
 
 st.divider()
 
-
-        
 st.write("Select one of the following user personas:")
-
 
 col1, col2, col3 = st.columns(3)
 
-
-# For each of the user personas for which we are implementing
-# functionality, we put a button on the screen that the user
-# can click to MIMIC logging in as that mock user.
+# Users mimic logging in by selecting their account from a list of all accounts
 with col1:
     st.subheader("Student Portal")
     st.caption("Student")
     st.write("Browse universities, compare tuition costs, and explore programs across Europe.")
 
     if st.button('Log in as a Student',
+    st.subheader("Student")
+    st.caption("Browse universities, compare tuition costs, and explore programs across Europe.")
+    if students:
+        student_options = {
+            f"{s['first_name']} {s['last_name']} ({s['email']})": s
+            for s in students
+        }
+
+        selected_label = st.selectbox(
+            "Select a student",
+            options=list(student_options.keys()),
+            index=None,
+            placeholder="Choose a student...",
+        )
+
+        if selected_label:
+            selected_student = student_options[selected_label]
+            st.session_state['selected_student'] = selected_student
+    else:
+        st.info("No students available to choose from.")
+
+    if st.button(f'Log in as {st.session_state.get("selected_student", {}).get("first_name", "Student")}',
                 type='primary',
                 use_container_width=True):
         # when user clicks the button, they are now considered authenticated
         st.session_state['authenticated'] = True
-        # we set the role of the current user
-        st.session_state['role'] = 'student'
-        # we add the first name of the user (so it can be displayed on
-        # subsequent pages).
-        st.session_state['first_name'] = 'Student'
-        # finally, we ask streamlit to switch to another page, in this case, the
-        # landing page for this particular user type
+        # set the role of the current user
+        # add the first name of the user (so it can be displayed on subsequent pages).
+        st.session_state['first_name'] = st.session_state.get('selected_student', {}).get('first_name', 'Student')
+        # switch to the next page
         logger.info("Logging in as Student Persona")
         st.switch_page('pages/00_Student_Home.py')
 
 with col2:
-    st.subheader("Cher")
-    st.caption("Labor Statistician")
-    st.write("Analyze employment trends, track labor market data, and generate insights across industries.")
+    st.subheader("Labor Statistician")
+    st.caption("Analyze employment trends, track labor market data, and generate insights across industries.")
+    if labor_statisticians:
+        statistician_options = {
+            f"{s['first_name']} {s['last_name']} ({s['email']})": s
+            for s in labor_statisticians
+        }
 
-    if st.button('Log in as Cher',
+        selected_statistician_label = st.selectbox(
+            "Select a labor statistician",
+            options=list(statistician_options.keys()),
+            index=None,
+            placeholder="Choose a labor statistician...",
+        )
+
+        if selected_statistician_label:
+            selected_statistician = statistician_options[selected_statistician_label]
+            st.session_state['selected_statistician'] = selected_statistician
+    else:
+        st.info("No labor statisticians available to choose from.")
+
+    if st.button(f'Log in as {st.session_state.get("selected_statistician", {}).get("first_name", "Labor Statistician")}',
                 type='primary',
                 use_container_width=True):
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'labor_statistician'
-        st.session_state['first_name'] = 'Cher'
+        st.session_state['first_name'] = st.session_state.get('selected_statistician', {}).get('first_name', 'Labor Statistician')
         logger.info("Logging in as Labor Statistician Persona")
         st.switch_page('pages/10_Labor_Statistician_Home.py')
 with col3:
-    st.subheader("Zuhal")
-    st.caption("Budget Manager")
-    st.write("Monitor university budgets, review financial allocations, and track spending across programs.")
+    st.subheader("Budget Manager")
+    st.caption("Monitor university budgets, review financial allocations, and track spending across programs.")
+    if budget_managers:
+        manager_options = {
+            f"{s['first_name']} {s['last_name']} ({s['email']})": s
+            for s in budget_managers
+        }
 
-    if st.button('Log in as Zuhal',
+        selected_manager_label = st.selectbox(
+            "Select a budget manager",
+            options=list(manager_options.keys()),
+            index=None,
+            placeholder="Choose a budget manager...",
+        )
+
+        if selected_manager_label:
+            selected_manager = manager_options[selected_manager_label]
+            st.session_state['selected_manager'] = selected_manager
+    else:
+        st.info("No budget managers available to choose from.")
+
+    if st.button(f'Log in as {st.session_state.get("selected_manager", {}).get("first_name", "Budget Manager")}',
                 type='primary',
                 use_container_width=True):
         st.session_state['authenticated'] = True
         st.session_state['role'] = 'budget_manager'
-        st.session_state['first_name'] = 'Zuhal'
+        st.session_state['first_name'] = st.session_state.get('selected_manager', {}).get('first_name', 'Budget Manager')
         logger.info("Logging in as Budget Manager Persona")
         st.switch_page('pages/20_Budget_Manager_Home.py')
