@@ -1,3 +1,7 @@
+-- Ensure this script is read as UTF-8 (the mysql client defaults to latin1
+-- in this image, which would corrupt any non-ASCII data on import).
+SET NAMES utf8mb4;
+
 CREATE TABLE student (
     id          INTEGER PRIMARY KEY,
     first_name  VARCHAR(50) NOT NULL,
