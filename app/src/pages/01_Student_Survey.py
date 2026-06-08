@@ -55,19 +55,19 @@ with st.form("student_survey", clear_on_submit=False):
     # ---- Location preferences -----------------------------------------------
     st.subheader("Location Preferences")
     country = st.text_input("What country do you live in?",
-                               placeholder="Enter your country")
+                            placeholder="Enter your country")
     proximity = st.slider("How far from home would you like to study? (km)",
-                             min_value=0, max_value=1500, value=(300, 1000), step=50,
-                             help="Distance in kilometers from your home location")
+                            min_value=0, max_value=1500, value=(300, 1000), step=50,
+                            help="Distance in kilometers from your home location")
     
     # ---- Campus preferences -------------------------------------------------
     st.subheader("Campus Preferences")
     campus_type = st.selectbox("What type of campus do you prefer?",
-                               options=["Urban", "Suburban", "Rural"],
-                               help="The setting of the campus")
+                            options=["Urban", "Suburban", "Rural"],
+                            help="The setting of the campus")
     #campus_size = st.slider("How large of a campus do you prefer? (Student population)",
-     #                        min_value=100, max_value=50000, value=(5000, 15000), step=500,
-     #                        help="The size of the campus in terms of student population")
+    #                        min_value=100, max_value=50000, value=(5000, 15000), step=500,
+    #                        help="The size of the campus in terms of student population")
 
     campus_size = st.radio("What size campus would you prefer?", 
                             options =["Small (<5,000 students)", "Medium (5,000-15,000 students)", "Large (>15,000 students)"])
@@ -75,14 +75,14 @@ with st.form("student_survey", clear_on_submit=False):
     
     # ---- Financial preferences ----------------------------------------------
     st.subheader("Financial Preferences")
-    budget = st.number_input("What is your budget for tuition per year? ($)",
-                             min_value=0, max_value=100000, value=20000, step=1000,
-                             help="Your budget for annual tuition in USD")
+    budget = st.number_input("What is your estimated budget for tuition per year? (EUR)",
+                            min_value=0, max_value=100000, value=20000, step=1000,
+                            help="Compared against estimated per-student fees from institutional data. Actual fees may vary by nationality and student status.")
     financial_aid = st.toggle("Are you interested in financial aid?",
-                             help="Toggle if you are interested in receiving financial aid")
+                            help="Toggle if you are interested in receiving financial aid")
 
     submitted = st.form_submit_button("Submit Survey", type="primary",
-                                      use_container_width=True)
+                                    use_container_width=True)
 
 # ---- Results ----------------------------------------------------------------
 if submitted:

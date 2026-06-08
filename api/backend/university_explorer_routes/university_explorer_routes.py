@@ -22,7 +22,7 @@ def get_universities():
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "SELECT id, name, location, student_fees, per_student_fees, highest_degree, staff_fte, web_pages "
             "FROM university"
         )
         return jsonify(cursor.fetchall()), 200
@@ -38,7 +38,7 @@ def get_university(university_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "SELECT id, name, location, student_fees, per_student_fees, highest_degree, staff_fte, web_pages "
             "FROM university WHERE id = %s",
             (university_id,),
         )
@@ -189,7 +189,7 @@ def get_favorites(student_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            """SELECT u.id, u.name, u.location, u.student_fees, u.highest_degree,
+            """SELECT u.id, u.name, u.location, u.student_fees, u.per_student_fees, u.highest_degree,
                       u.staff_fte, f.created_at
                  FROM favorites f
                  JOIN university u ON u.id = f.university_id

@@ -56,7 +56,7 @@ st.header(uni["name"])
 st.caption(show(uni.get("location")))
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Student fees", show(uni.get("student_fees"), lambda v: f"€{v:,.2f}"))
+col1.metric("Est. fees per student", show(uni.get("per_student_fees"), lambda v: f"€{v:,.2f}"))
 col2.metric("Staff (FTE)", show(uni.get("staff_fte"), lambda v: f"{v:,.0f}"))
 col3.metric("Highest degree", show(uni.get("highest_degree"),
                                    lambda v: DEGREE_LEVELS.get(int(v), f"Level {v:g}")))

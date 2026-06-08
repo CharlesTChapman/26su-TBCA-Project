@@ -23,9 +23,12 @@ CREATE TABLE university (
     name           VARCHAR(100) NOT NULL UNIQUE,
     location       VARCHAR(255),
     student_fees   FLOAT,
+    charges_fees     INTEGER,
+    per_student_fees FLOAT,
     highest_degree FLOAT,
-    staff_fte      INTEGER,
-    web_pages      VARCHAR(50)
+    staff_fte      FLOAT,
+    web_pages      VARCHAR(50),
+    total_students   FLOAT
 );
 
 CREATE TABLE budget_manager (
