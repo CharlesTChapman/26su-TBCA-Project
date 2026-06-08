@@ -65,6 +65,7 @@ st.write(f"**University ID:** {uni.get('id')}")
 st.write(f"**Location:** {show(uni.get('location'))}")
 web = uni.get("web_pages")
 if web:
+    web = web.strip("[]'\" ")
     st.write(f"**Website:** [{web}]({web})")
 else:
     st.write("**Website:** —")
