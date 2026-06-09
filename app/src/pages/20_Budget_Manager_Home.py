@@ -48,8 +48,8 @@ selected_name = st.selectbox(
 
 if selected_name:
     st.session_state["selected_university"] = selected_name
-    if st.button(f"View budget plan for {selected_name}", type="primary"):
-        st.switch_page("pages/21_Budget_Plan_Details.py")
+    if st.button(f"View budget details for {selected_name}", type="primary"):
+        st.switch_page("pages/22_University_Budget_Details.py")
 
 st.divider()
 

@@ -728,7 +728,7 @@ def stats_universities():
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
             """SELECT u.id, u.name, u.location,
-                      ar.year, ar.students, ar.graduation_rate, ar.avg_gpa
+                      ar.year, ar.students, ar.graduation_rate
                  FROM university u
                  LEFT JOIN academic_reports ar ON ar.university_id = u.id"""
         )
@@ -747,7 +747,7 @@ def stats_university(university_id):
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
             """SELECT u.id, u.name, u.location,
-                      ar.year, ar.students, ar.graduation_rate, ar.avg_gpa
+                      ar.year, ar.students, ar.graduation_rate
                  FROM university u
                  LEFT JOIN academic_reports ar ON ar.university_id = u.id
                 WHERE u.id = %s""",
@@ -757,6 +757,24 @@ def stats_university(university_id):
     except Error as e:
         current_app.logger.error(f"GET /stats/universities/{university_id} failed: {e}")
         return error_response("Could not retrieve university stats")
+
+
+@university_explorer_routes.route(
+    "/stats/universities/<int:university_id>/favorites", methods=["GET"])
+def stats_university_favorites(university_id):
+    """Count how many students have favorited a specific university."""
+    current_app.logger.info(f"GET /stats/universities/{university_id}/favorites")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT COUNT(*) AS favorite_count FROM favorites WHERE university_id = %s",
+            (university_id,),
+        )
+        return jsonify(cursor.fetchone()), 200
+    except Error as e:
+        current_app.logger.error(
+            f"GET /stats/universities/{university_id}/favorites failed: {e}")
+        return error_response("Could not retrieve favorite count")
 
 
 @university_explorer_routes.route("/stats/majors", methods=["GET"])
