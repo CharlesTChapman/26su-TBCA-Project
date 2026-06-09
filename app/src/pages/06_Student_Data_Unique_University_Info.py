@@ -79,5 +79,5 @@ is_fav = uni_id in favorite_ids
 
 if st.button("⭐ Favorited — click to remove" if is_fav else "☆ Add to favorites",
              type='primary', use_container_width=True):
-    requests.post(f"{API}/favorites/{student_id}/{uni_id}", timeout=10)
+    requests.post(f"{API}/favorites/student/{student_id}/university/{uni_id}", timeout=10)
     st.rerun()

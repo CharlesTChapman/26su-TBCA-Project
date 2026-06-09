@@ -28,7 +28,7 @@ for fav in favorites:
         st.write(fav.get("location") or "")
     with col2:
         if st.button("★ Remove", key=f"fav_{fav['id']}", use_container_width=True):
-            requests.post(f"{API}/favorites/{student_id}/{fav['id']}", timeout=10)
+            requests.post(f"{API}/favorites/student/{student_id}/university/{fav['id']}", timeout=10)
             st.rerun()
         if st.button("ℹ️ Details", key=f"det_fav_{fav['id']}", use_container_width=True):
             st.session_state['selected_university_id'] = fav["id"]

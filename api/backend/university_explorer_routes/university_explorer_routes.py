@@ -203,11 +203,11 @@ def get_favorites(student_id):
 
 
 @university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["GET"])
+    "/favorites/student/<int:student_id>/university/<int:university_id>", methods=["GET"])
 def get_favorite(student_id, university_id):
     """Check whether a specific university is favorited.
     Returns 'True' if favorited and 'False' if not favorited"""
-    current_app.logger.info(f"GET /favorites/{student_id}/{university_id}")
+    current_app.logger.info(f"GET /favorites/student/{student_id}/university/{university_id}")
     try:
         cursor = get_db().cursor()
         cursor.execute(
@@ -224,13 +224,13 @@ def get_favorite(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["POST"])
+    "/favorites/student/<int:student_id>/university/<int:university_id>", methods=["POST"])
 def toggle_favorite(student_id, university_id):
     """Toggle a favorite for a student
     If the favorited row exists in the table it deletes it.
     If the favorited row does not exist in the table it creates it.
     """
-    current_app.logger.info(f"POST /favorites/{student_id}/{university_id}")
+    current_app.logger.info(f"POST /favorites/student/{student_id}/university/{university_id}")
     try:
         db = get_db()
         cursor = db.cursor()
@@ -267,10 +267,10 @@ def toggle_favorite(student_id, university_id):
 
 # ---- Pros / Cons ------------------------------------------------------------
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["GET"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["GET"])
 def get_pros_cons(student_id, university_id):
     """Get student's pros/cons for a university."""
-    current_app.logger.info(f"GET /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"GET /pros_cons/student/{student_id}/university/{university_id}")
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
@@ -289,10 +289,10 @@ def get_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["POST"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["POST"])
 def create_pros_cons(student_id, university_id):
     """Create student's pros/cons list for a university."""
-    current_app.logger.info(f"POST /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"POST /pros_cons/student/{student_id}/university/{university_id}")
     data = request.get_json(silent=True) or {}
     try:
         db = get_db()
@@ -310,10 +310,10 @@ def create_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["PUT"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["PUT"])
 def update_pros_cons(student_id, university_id):
     """Update student's pros/cons list for a university."""
-    current_app.logger.info(f"PUT /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"PUT /pros_cons/student/{student_id}/university/{university_id}")
     data = request.get_json(silent=True) or {}
     try:
         db = get_db()
@@ -336,10 +336,10 @@ def update_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["DELETE"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["DELETE"])
 def delete_pros_cons(student_id, university_id):
     """Delete student's pros/cons list for a university."""
-    current_app.logger.info(f"DELETE /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"DELETE /pros_cons/student/{student_id}/university/{university_id}")
     try:
         db = get_db()
         cursor = db.cursor()
