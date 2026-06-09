@@ -90,7 +90,6 @@ CREATE TABLE academic_reports (
     year            YEAR NOT NULL,
     students        INTEGER,
     graduation_rate FLOAT,
-    avg_gpa         FLOAT,
     PRIMARY KEY (university_id, year),
     FOREIGN KEY (university_id) REFERENCES university(id)
 );
