@@ -21,7 +21,7 @@ if not student_id:
         st.switch_page('Home.py')
     st.stop()
 
-student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=10)
+student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=120)
 
 if student_survey.status_code != 200:
     st.error("Could not load your survey data. Please retake the survey.")
@@ -35,7 +35,7 @@ rec_response = requests.get(
         "country": student_survey.get("student_country"),
         "max_km": student_survey.get("student_proximity_max")
     },
-    timeout=50
+    timeout=300
 )
 
 if rec_response.status_code == 200:
@@ -45,7 +45,7 @@ if rec_response.status_code == 200:
         for rank, data in raw.items()
     ]
 else:
-    st.error("Could not load recommendations.")
+    st.error(f"Could not load recommendations. Response code: {rec_response.status_code}")
     st.stop()
 
 st.title("My Portal")
