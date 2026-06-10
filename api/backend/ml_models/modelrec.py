@@ -42,6 +42,16 @@ class university_ranking_model:
         model_df = pd.DataFrame(universities)
         keeping_cols = ['per_student_fees', 'highest_degree', 'staff_fte']
         model_df = model_df.dropna(subset=keeping_cols).reset_index(drop=True)
+        
+        if student_budget is not None:
+            model_df = model_df[
+                (model_df['per_student_fees'] <= budget) | (model_df['per_student_fees'] == 0)
+            ].reset_index(drop=True)
+            if model_df.empty:
+                current_app.logger.warning('No universities found within budget, returning empty result')
+                return {}
+            current_app.logger.info(f'Budget filter: {len(model_df)} universities within budget of {budget}')
+
         X_mat = model_df[keeping_cols].to_numpy()
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X_mat)
