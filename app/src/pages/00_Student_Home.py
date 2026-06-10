@@ -35,6 +35,10 @@ with col2:
     st.write(f"**Major:** {selected['major']}")
     st.write(f"**Address:** {selected['address']}")
 
+if st.button("Edit User Preferences"):
+    st.switch_page("pages/07_Student_Data_User_Information.py")
+
+
 st.divider()
 
 
