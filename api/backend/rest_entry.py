@@ -8,6 +8,7 @@ from backend.simple.simple_routes import simple_routes
 from backend.university_explorer_routes.university_explorer_routes import university_explorer_routes
 from backend.labor_routes.labor_routes import labor_routes  
 from backend.model_rec_routes.modelrec_routes import modelrec_routes
+from backend.budget_routes.budget_routes import budget_routes
 
 def create_app():
     app = Flask(__name__)
@@ -44,5 +45,7 @@ def create_app():
     app.register_blueprint(university_explorer_routes)
     app.register_blueprint(labor_routes)
     app.register_blueprint(modelrec_routes)
+    app.register_blueprint(budget_routes)
+
 
     return app
