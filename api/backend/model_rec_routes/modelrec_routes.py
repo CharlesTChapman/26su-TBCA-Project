@@ -1,3 +1,7 @@
+from configparser import Error
+
+from api.backend.db_connection import get_db
+from api.backend.university_explorer_routes import university_explorer_routes
 from flask import Blueprint, jsonify, request, current_app
 from backend.ml_models.modelrec import university_ranking_model
 from backend.utils import error_response
@@ -30,3 +34,21 @@ def get_all_matches(budget, degree, size):
     except Exception as e:
         current_app.logger.error(f'GET /modelrec/predict/all/{budget}/{degree}/{size} failed: {e}')
         return error_response('Could not retrieve university recommendations')
+
+@modelrec_routes.route("/country_coords/<country>", methods=["GET"])
+def get_country_coords(country):
+    """Get coordinates for a country."""
+    current_app.logger.info(f"GET /country_coords/{country}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT latitude, longitude FROM country_coords WHERE country = %s",
+            (country,)
+        )
+        row = cursor.fetchone()
+        if row is None:
+            return error_response("Country not found", 404)
+        return jsonify(row), 200
+    except Error as e:
+        current_app.logger.error(f"GET /country_coords/{country} failed: {e}")
+        return error_response("Could not retrieve country coordinates")
