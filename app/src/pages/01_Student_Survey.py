@@ -54,11 +54,16 @@ with st.form("student_survey", clear_on_submit=False):
 
     # ---- Location preferences -----------------------------------------------
     st.subheader("Location Preferences")
-    country = st.text_input("What country do you live in?",
-                            placeholder="Enter your country")
+    country = st.selectbox("What country do you live in?",
+                            options=["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
+                                "Czech Republic", "Denmark", "Estonia", "Finland", "France",
+                                "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia",
+                                "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland",
+                                "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden"],
+                            help="Select your home country")
     proximity = st.slider("How far from home would you like to study? (km)",
-                            min_value=0, max_value=1500, value=(300, 1000), step=50,
-                            help="Distance in kilometers from your home location")
+                            min_value=0, max_value=4500, value=1500, step=50,
+                            help="Maximum distance in kilometers from your home country")
     
     # ---- Campus preferences -------------------------------------------------
     st.subheader("Campus Preferences")
@@ -92,8 +97,7 @@ if submitted:
         "student_size": size_map[campus_size],
         "student_major": majors,
         "student_country": country,
-        "student_proximity_min": int(proximity[0]),
-        "student_proximity_max": int(proximity[1]),
+        "student_proximity": int(proximity),
         "student_campus_type": campus_type,
         "student_financial_aid": bool(financial_aid),
     }
