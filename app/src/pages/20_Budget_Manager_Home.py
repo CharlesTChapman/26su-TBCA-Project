@@ -93,3 +93,7 @@ else:
                 st.session_state["selected_university"] = uni_name
                 st.session_state["selected_plan_id"] = plan["id"]
                 st.switch_page("pages/21_Budget_Plan_Details.py")
+
+    st.divider()
+    if st.button("➕ Create new plan", type="primary"):
+        st.switch_page("pages/21_Budget_Plan_Details.py")

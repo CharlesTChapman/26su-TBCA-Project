@@ -104,14 +104,3 @@ CREATE TABLE budget_plan (
     FOREIGN KEY (university_id) REFERENCES university(id),
     FOREIGN KEY (budget_manager_id) REFERENCES budget_manager(id)
 );
-
-CREATE TABLE budget_plan_university (
-    plan_id       INTEGER NOT NULL,
-    university_id INTEGER NOT NULL,
-    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    amount        INTEGER,
-    PRIMARY KEY (plan_id, university_id),
-    FOREIGN KEY (plan_id)       REFERENCES budget_plan(id),
-    FOREIGN KEY (university_id) REFERENCES university(id)
-);
