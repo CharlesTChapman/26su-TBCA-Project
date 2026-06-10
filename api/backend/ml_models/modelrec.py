@@ -4,8 +4,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from geopy.distance import geodesic
-from geopy.geocoders import Nominatim
 from flask import current_app
 from backend.db_connection import get_db
 
