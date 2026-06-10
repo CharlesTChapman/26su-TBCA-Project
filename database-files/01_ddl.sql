@@ -1,3 +1,7 @@
+-- Ensure this script is read as UTF-8 (the mysql client defaults to latin1
+-- in this image, which would corrupt any non-ASCII data on import).
+SET NAMES utf8mb4;
+
 CREATE TABLE student (
     id          INTEGER PRIMARY KEY,
     first_name  VARCHAR(50) NOT NULL,
@@ -19,9 +23,12 @@ CREATE TABLE university (
     name           VARCHAR(100) NOT NULL UNIQUE,
     location       VARCHAR(255),
     student_fees   FLOAT,
+    charges_fees     INTEGER,
+    per_student_fees FLOAT,
     highest_degree FLOAT,
-    staff_fte      INTEGER,
-    web_pages      VARCHAR(50)
+    staff_fte      FLOAT,
+    web_pages      VARCHAR(50),
+    total_students   FLOAT
 );
 
 CREATE TABLE budget_manager (
@@ -83,7 +90,6 @@ CREATE TABLE academic_reports (
     year            YEAR NOT NULL,
     students        INTEGER,
     graduation_rate FLOAT,
-    avg_gpa         FLOAT,
     PRIMARY KEY (university_id, year),
     FOREIGN KEY (university_id) REFERENCES university(id)
 );
@@ -97,15 +103,4 @@ CREATE TABLE budget_plan (
     total_amount    INTEGER,
     FOREIGN KEY (university_id) REFERENCES university(id),
     FOREIGN KEY (budget_manager_id) REFERENCES budget_manager(id)
-);
-
-CREATE TABLE budget_plan_university (
-    plan_id       INTEGER NOT NULL,
-    university_id INTEGER NOT NULL,
-    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    amount        INTEGER,
-    PRIMARY KEY (plan_id, university_id),
-    FOREIGN KEY (plan_id)       REFERENCES budget_plan(id),
-    FOREIGN KEY (university_id) REFERENCES university(id)
 );

@@ -51,7 +51,7 @@ else:
 st.title("My Portal")
 
 st.write(
-   "Here lies all yor information regarding universities decisions. Good Luck!"
+   "Here lies all your information regarding universities decisions. Good Luck!"
 )
 
 
@@ -67,8 +67,15 @@ favorite_ids = {fav["id"] for fav in favorites}
 
 def toggle_favorite(university_id):
     """Add/remove a favorite, then refresh the page to reflect the change."""
-    requests.post(f"{API}/favorites/{student_id}/{university_id}", timeout=10)
+    requests.post(f"{API}/favorites/student/{student_id}/university/{university_id}", timeout=10)
     st.rerun()
+
+
+def view_details(university_id):
+    """Open the full-details page for a given university."""
+    st.session_state['selected_university_id'] = university_id
+    st.session_state['university_detail_origin'] = "pages/02_Student_Data.py"
+    st.switch_page("pages/06_Student_Data_Unique_University_Info.py")
 
 
 left, right = st.columns(2)
@@ -85,10 +92,14 @@ with left:
                 st.write(f"{university['city']} | {university['match']} match")
             with col2:
                 is_fav = uni_id in favorite_ids
-                if st.button("★ Favorited" if is_fav else "☆ Favorite",
+                if st.button("⭐ Favorited" if is_fav else "☆ Favorite",
                              key=f"rec_{university['name']}", use_container_width=True):
                     if uni_id is not None:
                         toggle_favorite(uni_id)
+                if uni_id is not None and st.button(
+                        "ℹ️ Details", key=f"det_rec_{university['name']}",
+                        use_container_width=True):
+                    view_details(uni_id)
         st.divider()
         if st.button("View More", key="view_more_results", use_container_width=True):
             st.switch_page("pages/03_Student_Data_Universities_List.py")
@@ -106,8 +117,11 @@ with right:
                 st.subheader(fav["name"])
                 st.write(fav.get("location") or "")
             with col2:
-                if st.button("★ Remove", key=f"fav_{fav['id']}", use_container_width=True):
+                if st.button("⭐ Remove", key=f"fav_{fav['id']}", use_container_width=True):
                     toggle_favorite(fav["id"])
+                if st.button("ℹ️ Details", key=f"det_fav_{fav['id']}",
+                             use_container_width=True):
+                    view_details(fav["id"])
         st.divider()
         if st.button("View More", key="view_more_favorites", use_container_width=True):
             st.switch_page("pages/05_Student_Data_All_Favorites.py")

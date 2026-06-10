@@ -6,7 +6,7 @@ import logging
 from backend.db_connection import init_app as init_db
 from backend.simple.simple_routes import simple_routes
 from backend.university_explorer_routes.university_explorer_routes import university_explorer_routes
-from backend.simple.labor_routes import labor_routes  
+from backend.labor_routes.labor_routes import labor_routes  
 from backend.model_rec_routes.modelrec_routes import modelrec_routes
 
 def create_app():

@@ -22,7 +22,7 @@ def get_universities():
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "SELECT id, name, location, student_fees, per_student_fees, highest_degree, staff_fte, web_pages "
             "FROM university"
         )
         return jsonify(cursor.fetchall()), 200
@@ -38,7 +38,7 @@ def get_university(university_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            "SELECT id, name, location, student_fees, highest_degree, staff_fte, web_pages "
+            "SELECT id, name, location, student_fees, per_student_fees, highest_degree, staff_fte, web_pages "
             "FROM university WHERE id = %s",
             (university_id,),
         )
@@ -189,7 +189,7 @@ def get_favorites(student_id):
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
-            """SELECT u.id, u.name, u.location, u.student_fees, u.highest_degree,
+            """SELECT u.id, u.name, u.location, u.student_fees, u.per_student_fees, u.highest_degree,
                       u.staff_fte, f.created_at
                  FROM favorites f
                  JOIN university u ON u.id = f.university_id
@@ -203,11 +203,11 @@ def get_favorites(student_id):
 
 
 @university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["GET"])
+    "/favorites/student/<int:student_id>/university/<int:university_id>", methods=["GET"])
 def get_favorite(student_id, university_id):
     """Check whether a specific university is favorited.
     Returns 'True' if favorited and 'False' if not favorited"""
-    current_app.logger.info(f"GET /favorites/{student_id}/{university_id}")
+    current_app.logger.info(f"GET /favorites/student/{student_id}/university/{university_id}")
     try:
         cursor = get_db().cursor()
         cursor.execute(
@@ -224,13 +224,13 @@ def get_favorite(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["POST"])
+    "/favorites/student/<int:student_id>/university/<int:university_id>", methods=["POST"])
 def toggle_favorite(student_id, university_id):
     """Toggle a favorite for a student
     If the favorited row exists in the table it deletes it.
     If the favorited row does not exist in the table it creates it.
     """
-    current_app.logger.info(f"POST /favorites/{student_id}/{university_id}")
+    current_app.logger.info(f"POST /favorites/student/{student_id}/university/{university_id}")
     try:
         db = get_db()
         cursor = db.cursor()
@@ -267,10 +267,10 @@ def toggle_favorite(student_id, university_id):
 
 # ---- Pros / Cons ------------------------------------------------------------
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["GET"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["GET"])
 def get_pros_cons(student_id, university_id):
     """Get student's pros/cons for a university."""
-    current_app.logger.info(f"GET /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"GET /pros_cons/student/{student_id}/university/{university_id}")
     try:
         cursor = get_db().cursor(dictionary=True)
         cursor.execute(
@@ -289,10 +289,10 @@ def get_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["POST"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["POST"])
 def create_pros_cons(student_id, university_id):
     """Create student's pros/cons list for a university."""
-    current_app.logger.info(f"POST /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"POST /pros_cons/student/{student_id}/university/{university_id}")
     data = request.get_json(silent=True) or {}
     try:
         db = get_db()
@@ -310,10 +310,10 @@ def create_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["PUT"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["PUT"])
 def update_pros_cons(student_id, university_id):
     """Update student's pros/cons list for a university."""
-    current_app.logger.info(f"PUT /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"PUT /pros_cons/student/{student_id}/university/{university_id}")
     data = request.get_json(silent=True) or {}
     try:
         db = get_db()
@@ -336,10 +336,10 @@ def update_pros_cons(student_id, university_id):
 
 
 @university_explorer_routes.route(
-    "/pros_cons/<int:student_id>/<int:university_id>", methods=["DELETE"])
+    "/pros_cons/student/<int:student_id>/university/<int:university_id>", methods=["DELETE"])
 def delete_pros_cons(student_id, university_id):
     """Delete student's pros/cons list for a university."""
-    current_app.logger.info(f"DELETE /pros_cons/{student_id}/{university_id}")
+    current_app.logger.info(f"DELETE /pros_cons/student/{student_id}/university/{university_id}")
     try:
         db = get_db()
         cursor = db.cursor()
@@ -437,3 +437,498 @@ def update_survey_form(student_id):
     except Error as e:
         current_app.logger.error(f"PUT /survey_form/{student_id} failed: {e}")
         return error_response("Could not update survey form", 400)
+    
+@university_explorer_routes.route("/survey_form/<int:student_id>", methods=["DELETE"])
+def delete_survey_form(student_id):
+    """Delete a student's survey responses."""
+    current_app.logger.info(f"DELETE /survey_form/{student_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM survey_form WHERE student_id = %s", (student_id,))
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Survey form not found", 404)
+        return jsonify({"message": "Survey form deleted"}), 200
+    except Error as e:
+        current_app.logger.error(f"DELETE /survey_form/{student_id} failed: {e}")
+        return error_response("Could not delete survey form", 400)
+
+
+# ---- Recommended Universities -----------------------------------------------
+@university_explorer_routes.route(
+    "/students/<int:student_id>/recommended_universities", methods=["GET"])
+def get_recommendations(student_id):
+    """Get the universities recommended to a student."""
+    current_app.logger.info(
+        f"GET /students/{student_id}/recommended_universities")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT u.id, u.name, u.location, r.created_at
+                 FROM recommendations r
+                 JOIN university u ON u.id = r.university_id
+                WHERE r.student_id = %s""",
+            (student_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(
+            f"GET /students/{student_id}/recommended_universities failed: {e}")
+        return error_response("Could not retrieve recommendations")
+
+
+@university_explorer_routes.route(
+    "/students/<int:student_id>/recommended_universities/<int:university_id>",
+    methods=["POST"])
+def add_recommendation(student_id, university_id):
+    """Recommend a university to a student."""
+    current_app.logger.info(
+        f"POST /students/{student_id}/recommended_universities/{university_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """INSERT INTO recommendations (student_id, university_id)
+               VALUES (%s, %s)""",
+            (student_id, university_id),
+        )
+        db.commit()
+        return jsonify({"message": "Recommendation added"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST recommendations failed: {e}")
+        return error_response("Could not add recommendation", 400)
+
+
+@university_explorer_routes.route(
+    "/students/<int:student_id>/recommended_universities/<int:university_id>",
+    methods=["DELETE"])
+def delete_recommendation(student_id, university_id):
+    """Delete a student's recommendation."""
+    current_app.logger.info(
+        f"DELETE /students/{student_id}/recommended_universities/{university_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """DELETE FROM recommendations
+                WHERE student_id = %s AND university_id = %s""",
+            (student_id, university_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Recommendation not found", 404)
+        return jsonify({"message": "Recommendation deleted"}), 200
+    except Error as e:
+        current_app.logger.error(f"DELETE recommendations failed: {e}")
+        return error_response("Could not delete recommendation", 400)
+
+
+# ---- Labor statistician account management ----------------------------------
+@university_explorer_routes.route("/labor_statisticians", methods=["POST"])
+def create_labor_statistician():
+    """Create a new labor statistician account."""
+    current_app.logger.info("POST /labor_statisticians")
+    data = request.get_json(silent=True) or {}
+    if not data.get("first_name") or not data.get("last_name") or not data.get("email"):
+        return error_response("'first_name', 'last_name' and 'email' are required", 400)
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        stat_id = data.get("id") or _next_id(cursor, "labor_statistician")
+        cursor.execute(
+            """INSERT INTO labor_statistician (id, first_name, last_name, email)
+               VALUES (%s, %s, %s, %s)""",
+            (stat_id, data["first_name"], data["last_name"], data["email"]),
+        )
+        db.commit()
+        return jsonify({"id": stat_id, "message": "Labor statistician created"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST /labor_statisticians failed: {e}")
+        return error_response("Could not create labor statistician", 400)
+
+
+@university_explorer_routes.route(
+    "/labor_statisticians/<int:labor_statistician_id>", methods=["GET"])
+def get_labor_statistician(labor_statistician_id):
+    """Get a specific labor statistician's account."""
+    current_app.logger.info(f"GET /labor_statisticians/{labor_statistician_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT id, first_name, last_name, email FROM labor_statistician WHERE id = %s",
+            (labor_statistician_id,),
+        )
+        stat = cursor.fetchone()
+        if stat is None:
+            return error_response("Labor statistician not found", 404)
+        return jsonify(stat), 200
+    except Error as e:
+        current_app.logger.error(f"GET labor_statistician failed: {e}")
+        return error_response("Could not retrieve labor statistician")
+
+
+@university_explorer_routes.route(
+    "/labor_statisticians/<int:labor_statistician_id>", methods=["PUT"])
+def update_labor_statistician(labor_statistician_id):
+    """Update a specific labor statistician's account."""
+    current_app.logger.info(f"PUT /labor_statisticians/{labor_statistician_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE labor_statistician
+                  SET first_name = COALESCE(%s, first_name),
+                      last_name  = COALESCE(%s, last_name),
+                      email      = COALESCE(%s, email)
+                WHERE id = %s""",
+            (data.get("first_name"), data.get("last_name"), data.get("email"),
+             labor_statistician_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Labor statistician not found", 404)
+        return jsonify({"message": "Labor statistician updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT labor_statistician failed: {e}")
+        return error_response("Could not update labor statistician", 400)
+
+
+@university_explorer_routes.route(
+    "/labor_statisticians/<int:labor_statistician_id>", methods=["DELETE"])
+def delete_labor_statistician(labor_statistician_id):
+    """Delete a specific labor statistician's account."""
+    current_app.logger.info(f"DELETE /labor_statisticians/{labor_statistician_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "DELETE FROM labor_statistician WHERE id = %s", (labor_statistician_id,)
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Labor statistician not found", 404)
+        return jsonify({"message": "Labor statistician deleted"}), 200
+    except Error as e:
+        current_app.logger.error(f"DELETE labor_statistician failed: {e}")
+        return error_response("Could not delete labor statistician", 400)
+
+
+# ---- Budget manager account management --------------------------------------
+@university_explorer_routes.route("/budget_managers", methods=["POST"])
+def create_budget_manager():
+    """Create a new budget manager account."""
+    current_app.logger.info("POST /budget_managers")
+    data = request.get_json(silent=True) or {}
+    if not data.get("first_name") or not data.get("last_name") or not data.get("email"):
+        return error_response("'first_name', 'last_name' and 'email' are required", 400)
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        manager_id = data.get("id") or _next_id(cursor, "budget_manager")
+        cursor.execute(
+            """INSERT INTO budget_manager (id, first_name, last_name, email)
+               VALUES (%s, %s, %s, %s)""",
+            (manager_id, data["first_name"], data["last_name"], data["email"]),
+        )
+        db.commit()
+        return jsonify({"id": manager_id, "message": "Budget manager created"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST /budget_managers failed: {e}")
+        return error_response("Could not create budget manager", 400)
+
+
+@university_explorer_routes.route(
+    "/budget_managers/<int:budget_manager_id>", methods=["GET"])
+def get_budget_manager(budget_manager_id):
+    """Get a specific budget manager's account."""
+    current_app.logger.info(f"GET /budget_managers/{budget_manager_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT id, first_name, last_name, email FROM budget_manager WHERE id = %s",
+            (budget_manager_id,),
+        )
+        manager = cursor.fetchone()
+        if manager is None:
+            return error_response("Budget manager not found", 404)
+        return jsonify(manager), 200
+    except Error as e:
+        current_app.logger.error(f"GET budget_manager failed: {e}")
+        return error_response("Could not retrieve budget manager")
+
+
+@university_explorer_routes.route(
+    "/budget_managers/<int:budget_manager_id>", methods=["PUT"])
+def update_budget_manager(budget_manager_id):
+    """Update a specific budget manager's account."""
+    current_app.logger.info(f"PUT /budget_managers/{budget_manager_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE budget_manager
+                  SET first_name = COALESCE(%s, first_name),
+                      last_name  = COALESCE(%s, last_name),
+                      email      = COALESCE(%s, email)
+                WHERE id = %s""",
+            (data.get("first_name"), data.get("last_name"), data.get("email"),
+             budget_manager_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Budget manager not found", 404)
+        return jsonify({"message": "Budget manager updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT budget_manager failed: {e}")
+        return error_response("Could not update budget manager", 400)
+
+
+@university_explorer_routes.route(
+    "/budget_managers/<int:budget_manager_id>", methods=["DELETE"])
+def delete_budget_manager(budget_manager_id):
+    """Delete a specific budget manager's account."""
+    current_app.logger.info(f"DELETE /budget_managers/{budget_manager_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            "DELETE FROM budget_manager WHERE id = %s", (budget_manager_id,)
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Budget manager not found", 404)
+        return jsonify({"message": "Budget manager deleted"}), 200
+    except Error as e:
+        current_app.logger.error(f"DELETE budget_manager failed: {e}")
+        return error_response("Could not delete budget manager", 400)
+
+
+# ---- Stats ------------------------------------------------------------------
+@university_explorer_routes.route("/stats/total_students", methods=["GET"])
+def stats_total_students():
+    """Get the total number of students."""
+    current_app.logger.info("GET /stats/total_students")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute("SELECT COUNT(*) AS total_students FROM student")
+        return jsonify(cursor.fetchone()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /stats/total_students failed: {e}")
+        return error_response("Could not retrieve student total")
+
+
+@university_explorer_routes.route("/stats/universities", methods=["GET"])
+def stats_universities():
+    """Get academic stats across all universities."""
+    current_app.logger.info("GET /stats/universities")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT u.id, u.name, u.location,
+                      ar.year, ar.students, ar.graduation_rate
+                 FROM university u
+                 LEFT JOIN academic_reports ar ON ar.university_id = u.id"""
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /stats/universities failed: {e}")
+        return error_response("Could not retrieve university stats")
+
+
+@university_explorer_routes.route(
+    "/stats/universities/<int:university_id>", methods=["GET"])
+def stats_university(university_id):
+    """Get academic stats for a specific university."""
+    current_app.logger.info(f"GET /stats/universities/{university_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT u.id, u.name, u.location,
+                      ar.year, ar.students, ar.graduation_rate
+                 FROM university u
+                 LEFT JOIN academic_reports ar ON ar.university_id = u.id
+                WHERE u.id = %s""",
+            (university_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /stats/universities/{university_id} failed: {e}")
+        return error_response("Could not retrieve university stats")
+
+
+@university_explorer_routes.route(
+    "/stats/universities/<int:university_id>/favorites", methods=["GET"])
+def stats_university_favorites(university_id):
+    """Count how many students have favorited a specific university."""
+    current_app.logger.info(f"GET /stats/universities/{university_id}/favorites")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            "SELECT COUNT(*) AS favorite_count FROM favorites WHERE university_id = %s",
+            (university_id,),
+        )
+        return jsonify(cursor.fetchone()), 200
+    except Error as e:
+        current_app.logger.error(
+            f"GET /stats/universities/{university_id}/favorites failed: {e}")
+        return error_response("Could not retrieve favorite count")
+
+
+@university_explorer_routes.route("/stats/majors", methods=["GET"])
+def stats_majors():
+    """Get the distribution of majors across students."""
+    current_app.logger.info("GET /stats/majors")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT major, COUNT(*) AS student_count
+                 FROM student
+                GROUP BY major
+                ORDER BY student_count DESC"""
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /stats/majors failed: {e}")
+        return error_response("Could not retrieve major distribution")
+
+
+@university_explorer_routes.route("/stats/budget/<int:university_id>", methods=["GET"])
+def stats_budget(university_id):
+    """Get budget information for a specific university."""
+    current_app.logger.info(f"GET /stats/budget/{university_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT id AS plan_id, budget_manager_id, total_amount,
+                      created_at, updated_at
+                 FROM budget_plan
+                WHERE university_id = %s""",
+            (university_id,),
+        )
+        plans = cursor.fetchall()
+        total = sum(p["total_amount"] or 0 for p in plans)
+        return jsonify({
+            "university_id": university_id,
+            "plans": plans,
+            "total_budget": total,
+        }), 200
+    except Error as e:
+        current_app.logger.error(f"GET /stats/budget/{university_id} failed: {e}")
+        return error_response("Could not retrieve budget stats")
+
+
+# ---- Budget Plans -----------------------------------------------------------
+@university_explorer_routes.route("/budget_plans", methods=["GET"])
+def get_budget_plans():
+    """Get all budget plans, optionally filtered by manager."""
+    budget_manager_id = request.args.get("budget_manager_id")
+    current_app.logger.info(
+        f"GET /budget_plans (budget_manager_id={budget_manager_id})")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        sql = """SELECT id, university_id, budget_manager_id, total_amount,
+                        created_at, updated_at
+                   FROM budget_plan"""
+        params = ()
+        if budget_manager_id is not None:
+            sql += " WHERE budget_manager_id = %s"
+            params = (budget_manager_id,)
+        cursor.execute(sql, params)
+        return jsonify(cursor.fetchall()), 200
+    except Error as e:
+        current_app.logger.error(f"GET /budget_plans failed: {e}")
+        return error_response("Could not retrieve budget plans")
+
+
+@university_explorer_routes.route("/budget_plans/<int:plan_id>", methods=["GET"])
+def get_budget_plan(plan_id):
+    """Get a specific budget plan."""
+    current_app.logger.info(f"GET /budget_plans/{plan_id}")
+    try:
+        cursor = get_db().cursor(dictionary=True)
+        cursor.execute(
+            """SELECT id, university_id, budget_manager_id, total_amount,
+                      created_at, updated_at
+                 FROM budget_plan WHERE id = %s""",
+            (plan_id,),
+        )
+        plan = cursor.fetchone()
+        if plan is None:
+            return error_response("Budget plan not found", 404)
+        return jsonify(plan), 200
+    except Error as e:
+        current_app.logger.error(f"GET /budget_plans/{plan_id} failed: {e}")
+        return error_response("Could not retrieve budget plan")
+
+
+@university_explorer_routes.route("/budget_plans", methods=["POST"])
+def create_budget_plan():
+    """Create a new budget plan."""
+    current_app.logger.info("POST /budget_plans")
+    data = request.get_json(silent=True) or {}
+    if not data.get("university_id") or not data.get("budget_manager_id"):
+        return error_response(
+            "'university_id' and 'budget_manager_id' are required", 400)
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+        plan_id = data.get("id") or _next_id(cursor, "budget_plan")
+        cursor.execute(
+            """INSERT INTO budget_plan
+                   (id, university_id, budget_manager_id, total_amount)
+               VALUES (%s, %s, %s, %s)""",
+            (plan_id, data["university_id"], data["budget_manager_id"],
+             data.get("total_amount")),
+        )
+        db.commit()
+        return jsonify({"id": plan_id, "message": "Budget plan created"}), 201
+    except Error as e:
+        current_app.logger.error(f"POST /budget_plans failed: {e}")
+        return error_response("Could not create budget plan", 400)
+
+
+@university_explorer_routes.route("/budget_plans/<int:plan_id>", methods=["PUT"])
+def update_budget_plan(plan_id):
+    """Update an existing budget plan."""
+    current_app.logger.info(f"PUT /budget_plans/{plan_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE budget_plan
+                  SET university_id     = COALESCE(%s, university_id),
+                      budget_manager_id = COALESCE(%s, budget_manager_id),
+                      total_amount      = COALESCE(%s, total_amount),
+                      updated_at        = CURRENT_TIMESTAMP
+                WHERE id = %s""",
+            (data.get("university_id"), data.get("budget_manager_id"),
+             data.get("total_amount"), plan_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Budget plan not found", 404)
+        return jsonify({"message": "Budget plan updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT /budget_plans/{plan_id} failed: {e}")
+        return error_response("Could not update budget plan", 400)
+
+
+@university_explorer_routes.route("/budget_plans/<int:plan_id>", methods=["DELETE"])
+def delete_budget_plan(plan_id):
+    """Delete an existing budget plan."""
+    current_app.logger.info(f"DELETE /budget_plans/{plan_id}")
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM budget_plan WHERE id = %s", (plan_id,))
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Budget plan not found", 404)
+        return jsonify({"message": "Budget plan deleted"}), 200
+    except Error as e:
+        current_app.logger.error(f"DELETE /budget_plans/{plan_id} failed: {e}")
+        return error_response("Could not delete budget plan", 400)

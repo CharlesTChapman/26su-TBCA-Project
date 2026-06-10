@@ -19,7 +19,7 @@ favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorites = favorites.json() if favorites.status_code == 200 else []
 
 if not favorites:
-    st.info("You haven't favorited any universities yet. Add some from your recommendations.")
+    st.write("You haven't favorited any universities yet. Add some from your recommendations.")
 
 for fav in favorites:
     col1, col2 = st.columns([3, 1])
@@ -28,5 +28,9 @@ for fav in favorites:
         st.write(fav.get("location") or "")
     with col2:
         if st.button("★ Remove", key=f"fav_{fav['id']}", use_container_width=True):
-            requests.post(f"{API}/favorites/{student_id}/{fav['id']}", timeout=10)
+            requests.post(f"{API}/favorites/student/{student_id}/university/{fav['id']}", timeout=10)
             st.rerun()
+        if st.button("ℹ️ Details", key=f"det_fav_{fav['id']}", use_container_width=True):
+            st.session_state['selected_university_id'] = fav["id"]
+            st.session_state['university_detail_origin'] = "pages/05_Student_Data_All_Favorites.py"
+            st.switch_page("pages/06_Student_Data_Unique_University_Info.py")
