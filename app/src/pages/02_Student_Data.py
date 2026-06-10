@@ -64,7 +64,7 @@ favorite_ids = {fav["id"] for fav in favorites}
 
 def toggle_favorite(university_id):
     """Add/remove a favorite, then refresh the page to reflect the change."""
-    requests.post(f"{API}/favorites/{student_id}/{university_id}", timeout=10)
+    requests.post(f"{API}/favorites/student/{student_id}/university/{university_id}", timeout=10)
     st.rerun()
 
 

@@ -63,7 +63,7 @@ for rec_index, university in enumerate(results):
         if st.button("★ Favorited" if is_fav else "☆ Favorite",
                      key=f"rec_{university['name']}", use_container_width=True):
             if uni_id is not None:
-                requests.post(f"{API}/favorites/{student_id}/{uni_id}", timeout=10)
+                requests.post(f"{API}/favorites/student/{student_id}/university/{uni_id}", timeout=10)
                 st.rerun()
         if uni_id is not None and st.button(
                 "ℹ️ Details", key=f"det_rec_{university['name']}",
