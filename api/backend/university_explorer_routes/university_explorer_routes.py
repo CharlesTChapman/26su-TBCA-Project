@@ -193,7 +193,8 @@ def get_favorites(student_id):
                       u.staff_fte, f.created_at
                  FROM favorites f
                  JOIN university u ON u.id = f.university_id
-                WHERE f.student_id = %s""",
+                WHERE f.student_id = %s
+                ORDER BY f.created_at""",
             (student_id,),
         )
         return jsonify(cursor.fetchall()), 200
@@ -202,8 +203,7 @@ def get_favorites(student_id):
         return error_response("Could not retrieve favorites")
 
 
-@university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["GET"])
+@university_explorer_routes.route("/favorites/<int:student_id>/<int:university_id>", methods=["GET"])
 def get_favorite(student_id, university_id):
     """Check whether a specific university is favorited.
     Returns 'True' if favorited and 'False' if not favorited"""
@@ -223,8 +223,7 @@ def get_favorite(student_id, university_id):
         return error_response("Could not retrieve favorite")
 
 
-@university_explorer_routes.route(
-    "/favorites/<int:student_id>/<int:university_id>", methods=["POST"])
+@university_explorer_routes.route("/favorites/<int:student_id>/<int:university_id>", methods=["POST"])
 def toggle_favorite(student_id, university_id):
     """Toggle a favorite for a student
     If the favorited row exists in the table it deletes it.
@@ -253,7 +252,7 @@ def toggle_favorite(student_id, university_id):
             db.commit()
             return jsonify({"favorited": False}), 200
 
-        # If the row doesn't exist, add it
+        # If the row doesn't exist, add it.
         cursor.execute(
             "INSERT INTO favorites (student_id, university_id) VALUES (%s, %s)",
             (student_id, university_id),
