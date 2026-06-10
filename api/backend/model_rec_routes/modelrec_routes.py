@@ -1,6 +1,6 @@
 from configparser import Error
 
-from api.backend.db_connection import get_db
+from backend.db_connection import get_db
 from api.backend.university_explorer_routes import university_explorer_routes
 from flask import Blueprint, jsonify, request, current_app
 from backend.ml_models.modelrec import university_ranking_model
