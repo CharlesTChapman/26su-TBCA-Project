@@ -1,5 +1,8 @@
-CREATE TABLE funding_allocation(
-   ETER_ID                           VARCHAR(6) NOT NULL PRIMARY KEY
+USE university_explorer;
+SET NAMES utf8mb4;
+
+CREATE TABLE IF NOT EXISTS funding_allocation(
+  ETER_ID                           VARCHAR(6) NOT NULL PRIMARY KEY
   ,English_Institution_Name          VARCHAR(60)
   ,Institution_Name                  VARCHAR(62) NOT NULL
   ,Reference_year                    INTEGER  NOT NULL
