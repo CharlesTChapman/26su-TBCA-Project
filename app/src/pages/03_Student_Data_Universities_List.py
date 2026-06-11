@@ -32,7 +32,7 @@ if rec_response.status_code != 200:
 results = [
     {"rank": rank, "name": data["name"], "city": data["city"], "match": data["match_number"]}
     for rank, data in rec_response.json().items()
-][:50]
+][:100]
 
 # --- Favorites lookup ---------------------------------------------------------
 # Recommendations only carry a name, so map name -> id in order to favorite them.
@@ -43,7 +43,7 @@ favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorite_ids = {fav["id"] for fav in favorites.json()} if favorites.status_code == 200 else set()
 
 st.title("Personalized University Recommendations")
-st.caption("Top 50 matches based on your survey. Star any to add it to your favorites.")
+st.caption("Top 100 matches based on your survey. Star any to add it to your favorites.")
 
 for rec_index, university in enumerate(results):
     # Separate each university
