@@ -240,10 +240,10 @@ with st.container(border=True):
     )
     st.divider()
 
-    widths = [2.4, 2.2, 1.7, 1.4, 1.6, 1.3]
+    widths = [2.4, 2.8, 1.7, 1.4, 1.6, 1.3]
     head = st.columns(widths)
     head[0].write("**Major**")
-    head[1].write("**Current → Target**")
+    head[1].write("**Current →**\n\n**Conservative Target →**\n\n**Ideal**\n\n**(Students)**")
     head[2].write("**Demand**")
     head[3].write("**Budget Adj.**")
     head[4].write("**Target Amount**")
