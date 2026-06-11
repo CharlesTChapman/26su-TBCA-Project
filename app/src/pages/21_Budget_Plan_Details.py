@@ -12,42 +12,10 @@ SideBarLinks()
 
 API = "http://web-api:4000"
 
-EU27_NAME_TO_GEO = {
-    "Austria": "AT", "Belgium": "BE", "Bulgaria": "BG", "Croatia": "HR",
-    "Cyprus": "CY", "Czechia": "CZ", "Czech Republic": "CZ", "Denmark": "DK",
-    "Estonia": "EE", "Finland": "FI", "France": "FR", "Germany": "DE",
-    "Greece": "EL", "Hungary": "HU", "Ireland": "IE", "Italy": "IT",
-    "Latvia": "LV", "Lithuania": "LT", "Luxembourg": "LU", "Malta": "MT",
-    "Netherlands": "NL", "Poland": "PL", "Portugal": "PT", "Romania": "RO",
-    "Slovakia": "SK", "Slovenia": "SI", "Spain": "ES", "Sweden": "SE",
-}
-EU27_GEOS = set(EU27_NAME_TO_GEO.values())
 
-
-def resolve_geo(uni):
-    # 1) university record already carries a code, e.g. "PL"
-    for key in ("geo", "country_code", "countryCode"):
-        v = uni.get(key)
-        if isinstance(v, str) and v.strip().upper() in EU27_GEOS:
-            return v.strip().upper(), None
-    for key in ("country", "country_name"):
-        v = uni.get(key)
-        if isinstance(v, str):
-            code = EU27_NAME_TO_GEO.get(v.strip())
-            if code:
-                return code, None
-    loc = (uni.get("location") or "").lower()
-    for name, code in EU27_NAME_TO_GEO.items():
-        if name.lower() in loc:
-            return code, None
-    return None, (
-        f"Couldn't determine a country for " 
-        f"{uni.get('name', 'this university')!r}. "
-        f"Add a country/geo field to the /universities record or include the "
-        f"country in its location string."
-    )
-
+# ---- Formatting Helpers -----------------------------------------------------
 def _g(row, *keys, default=None):
+    """Return the first present key from a row (handles differing field names)."""
     for k in keys:
         if row.get(k) is not None:
             return row[k]
@@ -94,7 +62,7 @@ if st.button("← Back", key="back_button"):
 
 st.title("Budget Plan Details")
 
-# --- Pick a university --------------------------------------------------------
+# ---- Pick a university ------------------------------------------------------
 try:
     universities = load_universities()
 except Exception as e:
@@ -123,11 +91,11 @@ uni = options[selected_name]
 uni_id = uni["id"]
 st.session_state["selected_university"] = selected_name
 
-# Resolve the country once, here, from the selected record.
-geo, geo_warning = resolve_geo(uni)
+# Country comes from the selected university's record (university.country).
+geo = uni.get("country")
 st.session_state["selected_country"] = geo
 
-# --- Gather the figures -------------------------------------------------------
+# ---- Get Data ------------------------------------------------------------
 num_students = None
 graduation_rate = None
 report_year = None
@@ -145,7 +113,7 @@ except Exception as e:
 
 student_fees = uni.get("student_fees")
 
-# --- Current standing ---------------------------------------------------------
+# --- Current standing --------------------------------------------------------
 st.divider()
 st.header(selected_name)
 st.caption(uni.get("location") or "")
@@ -163,9 +131,9 @@ col4.metric("Country", geo or "Unknown")
 if report_year is not None:
     st.caption(f"📅 Academic figures are from the {report_year} report.")
 
-# --- Save a budget plan -------------------------------------------------------
+# ---- Save a budget plan -----------------------------------------------------
 st.divider()
-st.subheader("💾 Save Budget Plan")
+st.subheader("Save Budget Plan")
 
 manager = st.session_state.get("selected_manager", {})
 manager_id = manager.get("id")
@@ -200,23 +168,17 @@ else:
             logger.error(f"Failed to save budget plan: {e}")
             st.error(f"Could not save the budget plan: {e}")
 
-# ---- Sector ML Model --------------------------------------------------
-# Country comes from the selected university's record (university.country)
-university = selected_name
-geo = uni.get("country")
+# ---- Sector reallocation (labor-market ML model) ----------------------------
+# This step needs the university's country to pull the right labor-market data.
 if not geo:
     st.warning(
-        f"No country is on file for {university}, so labor-market budget "
+        f"No country is on file for {selected_name}, so labor-market budget "
         "recommendations can't be generated."
     )
     st.stop()
 
-st.header(f"{university} Suggested Sector Reallocations")
 st.divider()
-st.subheader("Program Reallocation")
-
-if geo_warning:
-    st.warning(geo_warning)
+st.header(f"{selected_name} — Suggested Sector Reallocations")
 
 col_a, _ = st.columns([1, 3])
 with col_a:
@@ -254,7 +216,7 @@ with st.container(border=True):
     )
     st.divider()
 
-    widths = [2.4, 2.2, 1.7, 1.2, 1.6, 1.5, 1.2]
+    widths = [2.4, 2.2, 1.7, 1.4, 1.6, 1.3]
     head = st.columns(widths)
     head[0].write("**Major**")
     head[1].write("**Current → Target**")
