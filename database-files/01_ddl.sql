@@ -28,7 +28,9 @@ CREATE TABLE university (
     highest_degree FLOAT,
     staff_fte      FLOAT,
     web_pages      VARCHAR(50),
-    total_students   FLOAT
+    total_students   FLOAT,
+    latitude         FLOAT,
+    longitude        FLOAT
 );
 
 CREATE TABLE budget_manager (
@@ -73,6 +75,12 @@ CREATE TABLE recommendations (
     FOREIGN KEY (university_id) REFERENCES university(id)
 );
 
+CREATE TABLE country_coords (
+    country    VARCHAR(100) NOT NULL PRIMARY KEY,
+    latitude   FLOAT NOT NULL,
+    longitude  FLOAT NOT NULL
+);
+
 CREATE TABLE pros_cons (
     student_id    INTEGER NOT NULL,
     university_id INTEGER NOT NULL,
@@ -103,15 +111,4 @@ CREATE TABLE budget_plan (
     total_amount    INTEGER,
     FOREIGN KEY (university_id) REFERENCES university(id),
     FOREIGN KEY (budget_manager_id) REFERENCES budget_manager(id)
-);
-
-CREATE TABLE budget_plan_university (
-    plan_id       INTEGER NOT NULL,
-    university_id INTEGER NOT NULL,
-    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    amount        INTEGER,
-    PRIMARY KEY (plan_id, university_id),
-    FOREIGN KEY (plan_id)       REFERENCES budget_plan(id),
-    FOREIGN KEY (university_id) REFERENCES university(id)
 );

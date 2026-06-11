@@ -4,6 +4,7 @@ logger = logging.getLogger(__name__)
 import streamlit as st
 from datetime import date, time
 from modules.nav import SideBarLinks
+from modules.favorites_ui import render_favorites, format_fees
 import requests
 
 st.set_page_config(layout='wide')
@@ -21,7 +22,7 @@ if not student_id:
         st.switch_page('Home.py')
     st.stop()
 
-student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=10)
+student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=120)
 
 if student_survey.status_code != 200:
     st.error("Could not load your survey data. Please retake the survey.")
@@ -31,17 +32,21 @@ student_survey = student_survey.json()
 
 rec_response = requests.get(
     f"{API}/modelrec/predict/{student_survey['student_budget']}/{student_survey['student_degree_level']}/{student_survey['student_size']}",
-    timeout=50
+    params={
+        "country": student_survey.get("student_country"),
+        "max_km": student_survey.get("student_proximity_max")
+    },
+    timeout=300
 )
 
 if rec_response.status_code == 200:
     raw = rec_response.json()
     results = [
-        {"rank": rank, "name": data["name"], "city": data["city"], "match": data["match_number"]}
+        {"rank": rank, "name": data["name"], "city": data["city"], "match score": data["match_number"]}
         for rank, data in raw.items()
     ]
 else:
-    st.error("Could not load recommendations.")
+    st.error(f"Could not load recommendations. Response code: {rec_response.status_code}")
     st.stop()
 
 st.title("My Portal")
@@ -54,7 +59,7 @@ st.write(
 # --- Favorites (live, from the consolidated university table) ------------------
 # Recommendations only carry a name, so map name -> id in order to favorite them.
 universities = requests.get(f"{API}/universities", timeout=10)
-name_to_id = {u["name"]: u["id"] for u in universities.json()} if universities.status_code == 200 else {}
+uni_by_name = {u["name"]: u for u in universities.json()} if universities.status_code == 200 else {}
 
 favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorites = favorites.json() if favorites.status_code == 200 else []
@@ -80,12 +85,19 @@ with left:
     with st.container(border = True):
         st.subheader("Personalized University Recommendations")
         st.divider()
-        for university in results:
-            uni_id = name_to_id.get(university["name"])
+        for rec_index, university in enumerate(results):
+            # Separate each university
+            if rec_index > 0:
+                st.divider()
+            uni_record = uni_by_name.get(university["name"], {})
+            uni_id = uni_record.get("id")
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.subheader(f"{university['rank']} - {university['name']}")
-                st.write(f"{university['city']} | {university['match']}% match")
+                st.write(
+                    f"{university['city']} | {university['match score']} match score"
+                    f" | {format_fees(uni_record.get('per_student_fees'))}"
+                )
             with col2:
                 is_fav = uni_id in favorite_ids
                 if st.button("⭐ Favorited" if is_fav else "☆ Favorite",
@@ -105,19 +117,12 @@ with right:
     with st.container(border = True):
         st.subheader("Favorites")
         st.divider()
-        if not favorites:
-            st.write("No favorites yet — star a university from your recommendations.")
-        for fav in favorites:
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.subheader(fav["name"])
-                st.write(fav.get("location") or "")
-            with col2:
-                if st.button("⭐ Remove", key=f"fav_{fav['id']}", use_container_width=True):
-                    toggle_favorite(fav["id"])
-                if st.button("ℹ️ Details", key=f"det_fav_{fav['id']}",
-                             use_container_width=True):
-                    view_details(fav["id"])
+        render_favorites(
+            API, student_id, favorites,
+            origin_page="pages/02_Student_Data.py",
+            key_prefix="overview_fav",
+            limit=5,
+        )
         st.divider()
         if st.button("View More", key="view_more_favorites", use_container_width=True):
             st.switch_page("pages/05_Student_Data_All_Favorites.py")

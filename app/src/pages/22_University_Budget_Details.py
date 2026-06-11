@@ -111,3 +111,8 @@ col5.metric("Student Favorites",
 if report_year is not None:
     st.caption(f"📅 Academic figures are from the {report_year} report.")
 
+st.divider()
+
+if st.button(f"Create budget plan for {selected_name}", type="primary"):
+    st.switch_page("pages/21_Budget_Plan_Details.py")
+
