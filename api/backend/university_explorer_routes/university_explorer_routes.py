@@ -694,3 +694,30 @@ def create_budget_plan():
     except Error as e:
         current_app.logger.error(f"POST /budget_plans failed: {e}")
         return error_response("Could not create budget plan", 400)
+
+
+@university_explorer_routes.route("/budget_plans/<int:plan_id>", methods=["PUT"])
+def update_budget_plan(plan_id):
+    """Update an existing budget plan."""
+    current_app.logger.info(f"PUT /budget_plans/{plan_id}")
+    data = request.get_json(silent=True) or {}
+    try:
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute(
+            """UPDATE budget_plan
+                  SET university_id     = COALESCE(%s, university_id),
+                      budget_manager_id = COALESCE(%s, budget_manager_id),
+                      total_amount      = COALESCE(%s, total_amount),
+                      updated_at        = CURRENT_TIMESTAMP
+                WHERE id = %s""",
+            (data.get("university_id"), data.get("budget_manager_id"),
+             data.get("total_amount"), plan_id),
+        )
+        db.commit()
+        if cursor.rowcount == 0:
+            return error_response("Budget plan not found", 404)
+        return jsonify({"message": "Budget plan updated"}), 200
+    except Error as e:
+        current_app.logger.error(f"PUT /budget_plans/{plan_id} failed: {e}")
+        return error_response("Could not update budget plan", 400)
