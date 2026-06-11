@@ -43,7 +43,7 @@ favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorite_ids = {fav["id"] for fav in favorites.json()} if favorites.status_code == 200 else set()
 
 st.title("Personalized University Recommendations")
-st.caption("Top 50 matches based on your survey. Star any to add it to your favorites.")
+st.caption("Top 100 matches based on your survey. Star any to add it to your favorites.")
 
 for rec_index, university in enumerate(results):
     # Separate each university
