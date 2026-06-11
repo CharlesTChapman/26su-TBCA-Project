@@ -14,7 +14,7 @@ col1, col2 = st.columns([5,1])
 
 with col1:
     st.title('EU Labor Market Explorer')
-    st.caption('Eurostat EU27 · 2013–2023')
+    st.caption('Eurostat EU27 · 2013 – 2023')
 with col2:
     st.write("")
     st.write("")
@@ -37,7 +37,7 @@ except Exception as e:
     st.error(f'Could not reach API: {e}')
     st.stop()
 
-# ── charts ────────────────────────────────────────────────────
+# Charts
 st.subheader('Explore the Data')
 
 NUMERIC_COLS = ['employment_thousands', 'graduates', 'emp_change',

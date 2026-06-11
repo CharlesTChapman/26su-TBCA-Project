@@ -56,7 +56,7 @@ st.write(
 )
 
 
-# --- Favorites (live, from the consolidated university table) ------------------
+# Favorites 
 # Recommendations only carry a name, so map name -> id in order to favorite them.
 universities = requests.get(f"{API}/universities", timeout=10)
 uni_by_name = {u["name"]: u for u in universities.json()} if universities.status_code == 200 else {}

@@ -12,7 +12,7 @@ API = 'http://web-api:4000'
 
 st.title("Student Portal")
 
-# The student is chosen on the Home page and stored in session state
+# Student saved in session_state
 selected = st.session_state.get('selected_student')
 
 if not selected:

@@ -26,7 +26,7 @@ if st.button("← Back", key="back_button"):
 
 st.title("University Budget Details")
 
-# --- Pick a university -------------------------------------------------------
+# Pick a university
 try:
     universities = load_universities()
 except Exception as e:
@@ -56,8 +56,8 @@ uni = options[selected_name]
 uni_id = uni["id"]
 st.session_state["selected_university"] = selected_name
 
-# --- Gather the figures ------------------------------------------------------
-# Total students and graduation rate from the most recent academic report.
+# Gather the figures 
+    # Total students and graduation rate from the most recent academic report.
 num_students = None
 graduation_rate = None
 report_year = None
@@ -91,7 +91,7 @@ try:
 except Exception as e:
     logger.error(f"Could not load favorite count for university {uni_id}: {e}")
 
-# --- Display -----------------------------------------------------------------
+# Display 
 st.divider()
 st.header(selected_name)
 st.caption(uni.get("location") or "")

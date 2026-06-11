@@ -69,7 +69,7 @@ countries = sorted(df['geo'].unique())
 
 
 
-# ── prediction widget ─────────────────────────────────────────
+# Prediction Widget
 st.subheader('Run a Prediction')
 st.caption('Select a country and sector — values are pulled from the most recent year in the data.')
 
