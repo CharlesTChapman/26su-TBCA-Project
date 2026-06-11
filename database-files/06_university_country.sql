@@ -1,5 +1,6 @@
--- Country (ISO 2-letter) per university, derived from the city (location)
--- via the EU funding dataset city -> country mapping.
+USE university_explorer;
+
+-- Country derived from city
 SET NAMES utf8mb4;
 
 UPDATE university SET country = 'AT' WHERE location IN (

@@ -67,6 +67,7 @@ def _reallocate(programs, current_shares, program_demand, program_sectors, total
     for i, p in enumerate(programs):
         cur_pct = cur[i]
         tgt_pct = target[i]
+        ideal_pct = demand_split[i]
         delta_share = tgt_pct - cur_pct
         budget_adj = delta_share * total_budget
         if delta_share > BALANCED_BAND:
@@ -75,7 +76,7 @@ def _reallocate(programs, current_shares, program_demand, program_sectors, total
             status = 'Overfunded'
         else:
             status = 'Balanced'
-        results.append({'Program': p, 'Sectors': ', '.join(program_sectors.get(p, [])), 'Current Target': f'{cur_pct * 100:.0f}% -> {tgt_pct * 100:.0f}%', 'Demand Score': round(program_demand[p], 3), 'Budget Adj.': f'{budget_adj:+,.0f}', 'Budget Adj. Raw': round(budget_adj, 2), 'Target Amount': round(tgt_pct * total_budget, 2), 'Status': status})
+        results.append({'Program': p, 'Sectors': ', '.join(program_sectors.get(p, [])), 'Current Target': f'{cur_pct * 100:.0f}% → {tgt_pct * 100:.0f}% → {ideal_pct * 100:.0f}%', 'Demand Score': round(program_demand[p], 3), 'Budget Adj.': f'{budget_adj:+,.0f}', 'Budget Adj. Raw': round(budget_adj, 2), 'Target Amount': round(tgt_pct * total_budget, 2), 'Status': status})
     results.sort(key=lambda r: r['Budget Adj. Raw'], reverse=True)
     return results
 

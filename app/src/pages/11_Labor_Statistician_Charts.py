@@ -15,7 +15,7 @@ SideBarLinks()
 col1, col2 = st.columns([5, 1])
 with col1:
     st.title('EU Labor Market Explorer')
-    st.caption('Eurostat EU27 · 2013–2023')
+    st.caption('Eurostat EU27 · 2013 – 2023')
 with col2:
     st.write("")
     st.write("")

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, jsonify, current_app
 from backend.ml_models.labor import predict_employment_level, predict_employment_change
 from backend.db_connection import get_db
 

@@ -1,6 +1,6 @@
--- MOCK DATA
+-- MOCK STUDENT DATA
+USE university_explorer;
 
--- Read this script as UTF-8 so any non-ASCII data imports correctly.
 SET NAMES utf8mb4;
 
 -- ----Students----------------------------------------------------------------
