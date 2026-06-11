@@ -27,7 +27,31 @@ def get_observations():
         FROM labor_observations
         ORDER BY geo, nace_r2, time
     """)
-    return jsonify(cursor.fetchall()), 200
+    rows = cursor.fetchall()
+
+    # Overwrite `predicted` with the averaged Model 1 + Model 2 value, mirroring
+    # the home page combine logic. Each row uses its own series' prior-year
+    # employment as the lag input both models share.
+    by_series = {}
+    for r in rows:
+        by_series.setdefault((r['geo'], r['nace_r2']), []).append(r)
+
+    for series in by_series.values():
+        series.sort(key=lambda r: r['time'])
+        prev_emp = None
+        for r in series:
+            if prev_emp is not None and r['graduates'] is not None:
+                lvl = predict_employment_level(prev_emp)['predicted_employment_thousands']
+                chg = predict_employment_change(
+                    r['graduates'], prev_emp, r['time'])['predicted_change_thousands']
+                model1 = lvl
+                model2 = prev_emp + chg
+                r['predicted'] = round((model1 + model2) / 2, 2)
+            else:
+                r['predicted'] = None  # first year in a series has no lag
+            prev_emp = r['employment_thousands']
+
+    return jsonify(rows), 200
 
 
 @labor_routes.route('/labor/observations/<geo>', methods=['GET'])
@@ -101,5 +125,15 @@ def get_absorption_rates():
         WHERE absorption_rate IS NOT NULL
         GROUP BY sector
         ORDER BY avg_absorption
+    """)
+    return jsonify(cursor.fetchall()), 200
+
+@labor_routes.route('/labor/statisticians', methods=['GET'])
+def get_statisticians():
+    cursor = get_db().cursor(dictionary=True)
+    cursor.execute("""
+        SELECT id, first_name, last_name, email
+        FROM labor_statistician
+        ORDER BY last_name, first_name
     """)
     return jsonify(cursor.fetchall()), 200
