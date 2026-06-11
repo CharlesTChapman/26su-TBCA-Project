@@ -29,12 +29,25 @@ if student.status_code != 200:
     st.stop()
 student = student.json()
 
+MAJORS = ["Accounting", "Anthropology", "Architecture", "Art", "Biology",
+          "Business", "Chemistry", "Communications", "Computer Science",
+          "Criminal Justice", "Data Science", "Design", "Economics",
+          "Education", "Engineering", "English", "Environmental Science",
+          "Finance", "History", "Information Technology", "Journalism",
+          "Kinesiology", "Law", "Linguistics", "Management", "Marketing",
+          "Mathematics", "Mechanical Engineering", "Music", "Nursing",
+          "Philosophy", "Physics", "Political Science", "Psychology",
+          "Public Health", "Religious Studies", "Sociology", "Statistics",
+          "Theater"]
+
 with st.form("edit_user_info"):
     first_name = st.text_input("First name", value=student.get("first_name") or "")
     last_name = st.text_input("Last name", value=student.get("last_name") or "")
     email = st.text_input("Email", value=student.get("email") or "")
     address = st.text_input("Address", value=student.get("address") or "")
-    major = st.text_input("Major", value=student.get("major") or "")
+    current_major = student.get("major") or MAJORS[0]
+    major_index = MAJORS.index(current_major) if current_major in MAJORS else 0
+    major = st.selectbox("Major", options=MAJORS, index=major_index)
     saved = st.form_submit_button("Save changes", type="primary")
 
 if saved:
