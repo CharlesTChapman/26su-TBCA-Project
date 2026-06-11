@@ -200,7 +200,18 @@ else:
             logger.error(f"Failed to save budget plan: {e}")
             st.error(f"Could not save the budget plan: {e}")
 
-# ---- Sector ML model: program reallocation -----------------------------------
+# ---- Sector ML Model --------------------------------------------------
+# Country comes from the selected university's record (university.country)
+university = selected_name
+geo = uni.get("country")
+if not geo:
+    st.warning(
+        f"No country is on file for {university}, so labor-market budget "
+        "recommendations can't be generated."
+    )
+    st.stop()
+
+st.header(f"{university} Suggested Sector Reallocations")
 st.divider()
 st.subheader("Program Reallocation")
 
