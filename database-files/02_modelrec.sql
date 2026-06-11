@@ -1,4 +1,5 @@
--- Read this script as UTF-8 so the accented university names import correctly.
+USE university_explorer;
+
 SET NAMES utf8mb4;
 
 INSERT INTO university(name,location,student_fees,charges_fees,highest_degree,staff_fte,web_pages,total_students,per_student_fees,latitude,longitude) VALUES ('University of Vienna','Vienna',17131218.28,1,3.0,6378.5469,NULL,70221.382413601,243.96013993427025,48.2083537,16.3725042);

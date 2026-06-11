@@ -1,4 +1,5 @@
 USE university_explorer;
+
 SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS labor_observations (
