@@ -19,7 +19,7 @@ def about_page_nav():
 
 def student_home_nav():
     st.sidebar.page_link(
-        "pages/00_Student_Home.py", label="Student Home", icon="🏠"
+        "pages/00_Student_Home.py", label="Student Home", icon="📚"
     )
 
 
