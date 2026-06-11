@@ -1,16 +1,53 @@
 import logging
-logger = logging.getLogger(__name__)
 
 import requests
 import streamlit as st
 
-import requests
 from modules.nav import SideBarLinks
+
+logger = logging.getLogger(__name__)
 
 st.set_page_config(layout="wide")
 SideBarLinks()
 
 API = "http://web-api:4000"
+
+
+# ---- Formatting Helpers -----------------------------------------------------
+def _g(row, *keys, default=None):
+    """Return the first present key from a row (handles differing field names)."""
+    for k in keys:
+        if row.get(k) is not None:
+            return row[k]
+    return default
+
+
+def _fmt_demand(v):
+    if isinstance(v, (int, float)):
+        return f"{v:+.2f}"
+    return v if v is not None else "—"
+
+
+def _fmt_money(v):
+    if isinstance(v, (int, float)):
+        return f"€{v:,.0f}"
+    return v if v is not None else "—"
+
+
+def _amount_raw(row):
+    raw = row.get("_target_amount_raw")
+    if isinstance(raw, (int, float)):
+        return raw
+    v = row.get("Target Amount")
+    if isinstance(v, (int, float)):
+        return v
+    if isinstance(v, str):
+        try:
+            return float(v.replace("€", "").replace(",", "").strip())
+        except ValueError:
+            return 0.0
+    return 0.0
+
 
 @st.cache_data(ttl=300)
 def load_universities():
@@ -25,7 +62,7 @@ if st.button("← Back", key="back_button"):
 
 st.title("Budget Plan Details")
 
-# --- Pick a university --------------------------------------------------------
+# ---- Pick a university ------------------------------------------------------
 try:
     universities = load_universities()
 except Exception as e:
@@ -54,7 +91,11 @@ uni = options[selected_name]
 uni_id = uni["id"]
 st.session_state["selected_university"] = selected_name
 
-# --- Gather the figures -------------------------------------------------------
+# Country comes from the selected university's record (university.country).
+geo = uni.get("country")
+st.session_state["selected_country"] = geo
+
+# ---- Get Data ------------------------------------------------------------
 num_students = None
 graduation_rate = None
 report_year = None
@@ -70,33 +111,29 @@ try:
 except Exception as e:
     logger.error(f"Could not load academic stats for university {uni_id}: {e}")
 
-total_budget = uni.get("student_fees")
+student_fees = uni.get("student_fees")
 
-fee_per_student = None
-if total_budget is not None and num_students:
-    fee_per_student = total_budget / num_students
-
-# --- Current standing ---------------------------------------------------------
+# --- Current standing --------------------------------------------------------
 st.divider()
 st.header(selected_name)
 st.caption(uni.get("location") or "")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Total Budget",
-            f"€{total_budget:,.0f}" if total_budget is not None else "—",
+            f"€{student_fees:,.0f}" if student_fees is not None else "—",
             help="The university's reported total student-fee revenue.")
 col2.metric("Total Students",
             f"{num_students:,}" if num_students is not None else "—")
 col3.metric("Graduation Rate",
             f"{graduation_rate:.1%}" if graduation_rate is not None else "—")
-col4.metric("Budget Efficiency Score", "—")
+col4.metric("Country", geo or "Unknown")
 
 if report_year is not None:
     st.caption(f"📅 Academic figures are from the {report_year} report.")
 
-# --- Save a budget plan -------------------------------------------------------
+# ---- Save a budget plan -----------------------------------------------------
 st.divider()
-st.subheader("💾 Save Budget Plan")
+st.subheader("Save Budget Plan")
 
 manager = st.session_state.get("selected_manager", {})
 manager_id = manager.get("id")
@@ -107,7 +144,7 @@ else:
     plan_amount = st.number_input(
         "Budget amount for this plan (€)",
         min_value=0,
-        value=int(total_budget) if total_budget else 0,
+        value=int(student_fees) if student_fees else 0,
         step=100_000,
         key="save_plan_amount",
     )
@@ -130,24 +167,22 @@ else:
         except Exception as e:
             logger.error(f"Failed to save budget plan: {e}")
             st.error(f"Could not save the budget plan: {e}")
-           
-# ---- Sector ML Model --------------------------------------------------
-COUNTRY_BY_UNIVERSITY = {
-    "KU Leuven": "BE",
-    "Ghent University": "BE",
-    "Université Libre de Bruxelles (ULB)": "BE",
-}
 
-university = st.session_state.get("selected_university", "Unknown University")
-geo = COUNTRY_BY_UNIVERSITY.get(university, "BE")
+# ---- Sector reallocation (labor-market ML model) ----------------------------
+# This step needs the university's country to pull the right labor-market data.
+if not geo:
+    st.warning(
+        f"No country is on file for {selected_name}, so labor-market budget "
+        "recommendations can't be generated."
+    )
+    st.stop()
 
-st.title("Budget Plan Details")
-st.header(f"{university} Budget Plan Details")
 st.divider()
+st.header(f"{selected_name} — Suggested Sector Reallocations")
 
 col_a, _ = st.columns([1, 3])
 with col_a:
-    total_budget = st.number_input(
+    program_budget = st.number_input(
         "Total program budget (€)",
         min_value=0,
         value=12_000_000,
@@ -160,7 +195,7 @@ n_students = 0
 try:
     r = requests.get(
         f"{API}/budget_recommendations/students",
-        params={"geo": geo, "total_budget": total_budget},
+        params={"geo": geo, "total_budget": program_budget},
         timeout=15,
     )
     r.raise_for_status()
@@ -168,10 +203,8 @@ try:
     recs = payload.get("recommendations", [])
     n_students = payload.get("n_students", 0)
 except Exception as e:
-    logger.error(f"Could not load budget recommendations: {e}")
-    st.error(f"Could not load recommendations for {university} ({geo}): {e}")
-
-st.divider()
+    logger.error(f"Could not load budget recommendations for {geo}: {e}")
+    st.error(f"Could not load recommendations for {selected_name} ({geo}): {e}")
 
 with st.container(border=True):
     st.subheader("Program Reallocation Table")
@@ -183,7 +216,7 @@ with st.container(border=True):
     )
     st.divider()
 
-    widths = [2.4, 2.2, 1.7, 1.2, 1.6, 1.5, 1.2]
+    widths = [2.4, 2.2, 1.7, 1.4, 1.6, 1.3]
     head = st.columns(widths)
     head[0].write("**Major**")
     head[1].write("**Current → Target**")
@@ -200,17 +233,16 @@ with st.container(border=True):
 
     for row in recs:
         c = st.columns(widths)
-        c[0].write(row.get("Program", "—"))
-        c[1].write(row.get("Current Target", "—"))
-        c[2].write(f"{row.get('Demand Score', 0):+.2f}")
-        c[3].write(row.get("Budget Adj.", "—"))
-        target_amt = row.get("Target Amount")
-        c[4].write(f"€{target_amt:,.0f}" if target_amt is not None else "—")
-        status = row.get("Status", "—")
+        c[0].write(_g(row, "Major", "Program", default="—"))
+        c[1].write(_g(row, "Current → Target", "Current Target", default="—"))
+        c[2].write(_fmt_demand(_g(row, "Demand", "Demand Score")))
+        c[3].write(_g(row, "Budget Adj.", default="—"))
+        c[4].write(_fmt_money(_g(row, "Target Amount")))
+        status = _g(row, "Status", default="—")
         prefix = status_color.get(status, "")
         c[5].write(f"{prefix}[{status}]" if prefix else status)
 
     if recs:
         st.divider()
-        total_alloc = sum(r.get("Target Amount", 0) or 0 for r in recs)
-        st.caption(f"Allocated: €{total_alloc:,.0f} of €{total_budget:,.0f}")
+        total_alloc = sum(_amount_raw(r) for r in recs)
+        st.caption(f"Allocated: €{total_alloc:,.0f} of €{program_budget:,.0f}")

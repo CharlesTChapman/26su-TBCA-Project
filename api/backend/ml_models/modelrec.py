@@ -14,7 +14,7 @@ class university_ranking_model:
         """Fetches all universities from the university table in the database."""
         with get_db().cursor(dictionary=True) as cursor:
             cursor.execute(
-                'SELECT name, location AS city, student_fees, highest_degree, staff_fte, web_pages '
+                'SELECT name, location AS city, per_student_fees, highest_degree, staff_fte, web_pages, latitude, longitude '
                 'FROM university '
                 'ORDER BY name'
             )
@@ -113,7 +113,7 @@ class university_ranking_model:
 
         universities = self._get_universities()
         model_df = pd.DataFrame(universities)
-        keeping_cols = ['student_fees', 'highest_degree', 'staff_fte']
+        keeping_cols = ['per_student_fees', 'highest_degree', 'staff_fte']
         
         if student_country and max_distance_km:
             model_df = self._filter_by_distance(model_df, student_country, max_distance_km)
@@ -125,7 +125,7 @@ class university_ranking_model:
         
         if student_budget is not None:
             model_df = model_df[
-                (model_df['student_fees'] <= budget) | (model_df['student_fees'] == 0)
+                (model_df['per_student_fees'] <= budget) | (model_df['per_student_fees'] == 0)
             ].reset_index(drop=True)
             if model_df.empty:
                 current_app.logger.warning('No universities found within budget, returning empty result')
