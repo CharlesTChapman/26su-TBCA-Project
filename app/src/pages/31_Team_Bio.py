@@ -9,9 +9,11 @@ BIOS = {
     "Tyler": {
         "image": "assets/dev_headshots/tyler_gladu_headshot.png",
         "role": "Database Design & Front End",
-        "bio": """Hi! My name is Tyler Gladu. I'm from Upton, MA, 
-                and I led database design and implementation and contributed to 
-               the front end and user interface.""",
+        "bio": """Hi! My name is Tyler Gladu and I am from Upton, MA. 
+                I helped build our user interface, 
+                create routes in our API layer, and develop our database to store information.
+                I helped build around 75% of our UI and 40% of our API layer, to allow our frontend to communicate
+                 with our backend. """,
         "linkedin": "https://www.linkedin.com/in/tyler-gladu-bb7783239/",
     },
     "Charlie": {
