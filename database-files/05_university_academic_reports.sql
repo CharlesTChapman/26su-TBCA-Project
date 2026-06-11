@@ -1,6 +1,5 @@
--- Read names as UTF-8 so accented university names match, and IGNORE rows whose
--- (university_id, year) already exists. Duplicates occur because several source
--- universities share a name and collapse to one id under university.name UNIQUE.
+USE university_explorer;
+
 SET NAMES utf8mb4;
 
 INSERT IGNORE INTO academic_reports (university_id, year, students, graduation_rate)
