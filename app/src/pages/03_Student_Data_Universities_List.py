@@ -3,6 +3,7 @@ logger = logging.getLogger(__name__)
 
 import streamlit as st
 from modules.nav import SideBarLinks
+from modules.favorites_ui import format_fees
 import requests
 
 st.set_page_config(layout='wide')
@@ -36,7 +37,7 @@ results = [
 # --- Favorites lookup ---------------------------------------------------------
 # Recommendations only carry a name, so map name -> id in order to favorite them.
 universities = requests.get(f"{API}/universities", timeout=10)
-name_to_id = {u["name"]: u["id"] for u in universities.json()} if universities.status_code == 200 else {}
+uni_by_name = {u["name"]: u for u in universities.json()} if universities.status_code == 200 else {}
 
 favorites = requests.get(f"{API}/favorites/{student_id}", timeout=10)
 favorite_ids = {fav["id"] for fav in favorites.json()} if favorites.status_code == 200 else set()
@@ -44,18 +45,25 @@ favorite_ids = {fav["id"] for fav in favorites.json()} if favorites.status_code 
 st.title("Personalized University Recommendations")
 st.caption("Top 50 matches based on your survey. Star any to add it to your favorites.")
 
-for university in results:
-    uni_id = name_to_id.get(university["name"])
+for rec_index, university in enumerate(results):
+    # Separate each university
+    if rec_index > 0:
+        st.divider()
+    uni_record = uni_by_name.get(university["name"], {})
+    uni_id = uni_record.get("id")
     col1, col2 = st.columns([3, 1])
     with col1:
         st.subheader(f"{university['rank']} - {university['name']}")
-        st.write(f"{university['city']} | {university['match']}% match")
+        st.write(
+            f"{university['city']} | {university['match']}% match"
+            f" | {format_fees(uni_record.get('per_student_fees'))}"
+        )
     with col2:
         is_fav = uni_id in favorite_ids
-        if st.button("★ Favorited" if is_fav else "☆ Favorite",
+        if st.button("⭐ Favorited" if is_fav else "☆ Favorite",
                      key=f"rec_{university['name']}", use_container_width=True):
             if uni_id is not None:
-                requests.post(f"{API}/favorites/{student_id}/{uni_id}", timeout=10)
+                requests.post(f"{API}/favorites/student/{student_id}/university/{uni_id}", timeout=10)
                 st.rerun()
         if uni_id is not None and st.button(
                 "ℹ️ Details", key=f"det_rec_{university['name']}",

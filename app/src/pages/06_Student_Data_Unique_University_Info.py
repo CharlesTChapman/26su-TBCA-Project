@@ -65,6 +65,7 @@ st.write(f"**University ID:** {uni.get('id')}")
 st.write(f"**Location:** {show(uni.get('location'))}")
 web = uni.get("web_pages")
 if web:
+    web = web.strip("[]'\" ")
     st.write(f"**Website:** [{web}]({web})")
 else:
     st.write("**Website:** —")
@@ -78,5 +79,5 @@ is_fav = uni_id in favorite_ids
 
 if st.button("⭐ Favorited — click to remove" if is_fav else "☆ Add to favorites",
              type='primary', use_container_width=True):
-    requests.post(f"{API}/favorites/{student_id}/{uni_id}", timeout=10)
+    requests.post(f"{API}/favorites/student/{student_id}/university/{uni_id}", timeout=10)
     st.rerun()
