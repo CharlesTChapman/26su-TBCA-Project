@@ -21,14 +21,6 @@ class university_ranking_model:
             rows = cursor.fetchall()
         if not rows:
             raise ValueError('No data found...')
-        for row in rows:
-            for field in ('name', 'city'):
-                if row[field]:
-                    try:
-                        row[field] = row[field].replace('ÃŸ', 'ß')
-                        row[field] = row[field].encode('latin1').decode('utf-8')
-                    except (UnicodeDecodeError, UnicodeEncodeError):
-                        pass
         return rows
 
     def _get_country_coords(self, country: str) -> tuple: # type: ignore

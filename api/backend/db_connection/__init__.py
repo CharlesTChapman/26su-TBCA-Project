@@ -20,7 +20,6 @@ def get_db():
             password=current_app.config['MYSQL_DATABASE_PASSWORD'],
             database=current_app.config['MYSQL_DATABASE_DB'],
             port=current_app.config['MYSQL_DATABASE_PORT'],
-            charset='utf8mb4'
         )
     return g.db
 
