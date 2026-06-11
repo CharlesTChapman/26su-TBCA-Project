@@ -11,8 +11,8 @@ There’s no longer a need to stress about the future, because we at TBCA are he
 
 ## Why TBCA?
 The name stands for three views of the same problem the app tries to solve:
-**T**hink **B**efore **C**ommitting, **A**nalytics — *The Best Choice Academics*,
-*Think Before Committing Analytics*, and *True Budget Clarity Accounting*.
+***T**he **B**est **C**hoice **A**cademics* —
+***T**hink **B**efore **C**ommitting **A**nalytics* — ***T**rue **B**udget **C**larity **A**ccounting*.
 
 Built for Summer 2026 CS 4973 (Belgium Dialogue) at Northeastern University.
 
@@ -20,7 +20,7 @@ Built for Summer 2026 CS 4973 (Belgium Dialogue) at Northeastern University.
 
 We have deployed our app as well! To view, click the link down below and enjoy!
 
-["TBCA - Solve The Future"](https://tbcacademics.neu-in-leuven.cloud/)
+[**TBCA - Solve The Future**](https://tbcacademics.neu-in-leuven.cloud/)
 
 ## Features
 
@@ -141,7 +141,7 @@ We have ***yet*** to implement a form of authentication, but hope to eventually.
 
 Read about how we built TBCA and what we learned along the way:
 
-["Come Follow Along With Our Journey! - Blog Site"](https://httpsbina.github.io/26su-TBCA/)
+[**Come Follow Along With Our Journey! - Blog Site**](https://httpsbina.github.io/26su-TBCA/)
 
 ## Our Team
 
