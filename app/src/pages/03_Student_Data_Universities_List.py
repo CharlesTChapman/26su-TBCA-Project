@@ -30,9 +30,9 @@ if rec_response.status_code != 200:
     st.stop()
 
 results = [
-    {"rank": rank, "name": data["name"], "city": data["city"], "match": data["match_number"]}
+    {"rank": rank, "name": data["name"], "city": data["city"], "match score": data["match_number"]}
     for rank, data in rec_response.json().items()
-][:50]
+][:100]
 
 # --- Favorites lookup ---------------------------------------------------------
 # Recommendations only carry a name, so map name -> id in order to favorite them.
@@ -55,7 +55,7 @@ for rec_index, university in enumerate(results):
     with col1:
         st.subheader(f"{university['rank']} - {university['name']}")
         st.write(
-            f"{university['city']} | {university['match']}% match"
+            f"{university['city']} | {university['match score']} match score"
             f" | {format_fees(uni_record.get('per_student_fees'))}"
         )
     with col2:

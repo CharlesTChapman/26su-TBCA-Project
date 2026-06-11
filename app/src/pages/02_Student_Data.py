@@ -42,7 +42,7 @@ rec_response = requests.get(
 if rec_response.status_code == 200:
     raw = rec_response.json()
     results = [
-        {"rank": rank, "name": data["name"], "city": data["city"], "match": data["match_number"]}
+        {"rank": rank, "name": data["name"], "city": data["city"], "match score": data["match_number"]}
         for rank, data in raw.items()
     ]
 else:
@@ -95,7 +95,7 @@ with left:
             with col1:
                 st.subheader(f"{university['rank']} - {university['name']}")
                 st.write(
-                    f"{university['city']} | {university['match']}% match"
+                    f"{university['city']} | {university['match score']} match score"
                     f" | {format_fees(uni_record.get('per_student_fees'))}"
                 )
             with col2:
