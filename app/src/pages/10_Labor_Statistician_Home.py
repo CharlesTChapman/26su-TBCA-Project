@@ -50,7 +50,9 @@ COUNTRY_NAMES = {
 sectors = sorted(df['sector'].unique())
 countries = sorted(df['geo'].unique())
 
-# ── prediction widget ─────────────────────────────────────────
+
+
+# Prediction Widget
 st.subheader('Run a Prediction')
 st.caption('Pick a country and sector once. Inputs auto-fill from the most recent '
            'year, then both models run together.')

@@ -33,7 +33,7 @@ if not student_id:
 
 with st.form("student_survey", clear_on_submit=False):
 
-    # ---- Majors -------------------------------------------------------------
+    # Majors 
     st.subheader("Degree Preferences")
     majors = st.selectbox(
         "Which major are you interested in?",
@@ -52,7 +52,7 @@ with st.form("student_survey", clear_on_submit=False):
     degree_level = st.radio("What degree do you want to finish with?",
                             options = ["Bachelor's Degree", "Master's Degree", "Doctorate's Degree"])
 
-    # ---- Location preferences -----------------------------------------------
+    # Location preferences 
     st.subheader("Location Preferences")
     country = st.selectbox("What country do you live in?",
                             options=["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
@@ -65,7 +65,7 @@ with st.form("student_survey", clear_on_submit=False):
                             min_value=0, max_value=4500, value=1500, step=50,
                             help="Maximum distance in kilometers from your home country")
     
-    # ---- Campus preferences -------------------------------------------------
+    # Campus preferences
     st.subheader("Campus Preferences")
     campus_type = st.selectbox("What type of campus do you prefer?",
                             options=["Urban", "Suburban", "Rural"],
@@ -78,7 +78,7 @@ with st.form("student_survey", clear_on_submit=False):
                             options =["Small (<5,000 students)", "Medium (5,000-15,000 students)", "Large (>15,000 students)"])
 
     
-    # ---- Financial preferences ----------------------------------------------
+    # Financial preferences 
     st.subheader("Financial Preferences")
     filter_by_budget = st.toggle("Filter universities by budget?", value=True,
                                 help="Turn off to see all universities regardless of fees")
@@ -94,7 +94,7 @@ with st.form("student_survey", clear_on_submit=False):
     submitted = st.form_submit_button("Submit Survey", type="primary",
                                     use_container_width=True)
 
-# ---- Results ----------------------------------------------------------------
+# Show Results 
 if submitted:
     survey_data = {
         "student_budget": float(budget) if filter_by_budget else None,

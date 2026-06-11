@@ -14,7 +14,7 @@ API = "http://web-api:4000"
 
 student_id = st.session_state.get('student_id')
 
-# --- Survey + full recommendation ranking -------------------------------------
+# Survey + full recommendation ranking
 student_survey = requests.get(f"{API}/survey_form/{student_id}", timeout=10)
 if student_survey.status_code != 200:
     st.error("Could not load your survey data. Please retake the survey.")
@@ -34,8 +34,7 @@ results = [
     for rank, data in rec_response.json().items()
 ][:100]
 
-# --- Favorites lookup ---------------------------------------------------------
-# Recommendations only carry a name, so map name -> id in order to favorite them.
+# Favorites
 universities = requests.get(f"{API}/universities", timeout=10)
 uni_by_name = {u["name"]: u for u in universities.json()} if universities.status_code == 200 else {}
 

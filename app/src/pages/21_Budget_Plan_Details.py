@@ -13,7 +13,7 @@ SideBarLinks()
 API = "http://web-api:4000"
 
 
-# ---- Formatting Helpers -----------------------------------------------------
+# Format Helper Functions
 def _g(row, *keys, default=None):
     """Return the first present key from a row (handles differing field names)."""
     for k in keys:
@@ -62,7 +62,7 @@ if st.button("← Back", key="back_button"):
 
 st.title("Budget Plan Details")
 
-# ---- Pick a university ------------------------------------------------------
+# Pick University
 try:
     universities = load_universities()
 except Exception as e:
@@ -95,7 +95,7 @@ st.session_state["selected_university"] = selected_name
 geo = uni.get("country")
 st.session_state["selected_country"] = geo
 
-# ---- Get Data ------------------------------------------------------------
+# Get Data
 num_students = None
 graduation_rate = None
 report_year = None
@@ -113,7 +113,7 @@ except Exception as e:
 
 student_fees = uni.get("student_fees")
 
-# --- Current standing --------------------------------------------------------
+# Current Standing
 st.divider()
 st.header(selected_name)
 st.caption(uni.get("location") or "")
@@ -131,7 +131,7 @@ col4.metric("Country", geo or "Unknown")
 if report_year is not None:
     st.caption(f"📅 Academic figures are from the {report_year} report.")
 
-# ---- Save a budget plan -----------------------------------------------------
+# Save a plan
 st.divider()
 st.subheader("Save Budget Plan")
 
@@ -168,7 +168,7 @@ else:
             logger.error(f"Failed to save budget plan: {e}")
             st.error(f"Could not save the budget plan: {e}")
 
-# ---- Sector reallocation (labor-market ML model) ----------------------------
+# Sector reallocation (labor-market ML model) 
 # This step needs the university's country to pull the right labor-market data.
 if not geo:
     st.warning(
