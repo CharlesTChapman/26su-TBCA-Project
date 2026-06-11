@@ -203,7 +203,7 @@ def get_favorites(student_id):
         return error_response("Could not retrieve favorites")
 
 
-@university_explorer_routes.route("/favorites/<int:student_id>/<int:university_id>", methods=["GET"])
+@university_explorer_routes.route("/favorites/student/<int:student_id>/university/<int:university_id>", methods=["GET"])
 def get_favorite(student_id, university_id):
     """Check whether a specific university is favorited.
     Returns 'True' if favorited and 'False' if not favorited"""
@@ -223,7 +223,7 @@ def get_favorite(student_id, university_id):
         return error_response("Could not retrieve favorite")
 
 
-@university_explorer_routes.route("/favorites/<int:student_id>/<int:university_id>", methods=["POST"])
+@university_explorer_routes.route("/favorites/student/<int:student_id>/university/<int:university_id>", methods=["POST"])
 def toggle_favorite(student_id, university_id):
     """Toggle a favorite for a student
     If the favorited row exists in the table it deletes it.

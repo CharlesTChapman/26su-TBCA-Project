@@ -96,7 +96,7 @@ with left:
                 )
             with col2:
                 is_fav = uni_id in favorite_ids
-                if st.button("★ Favorited" if is_fav else "☆ Favorite",
+                if st.button("⭐ Favorited" if is_fav else "☆ Favorite",
                              key=f"rec_{university['name']}", use_container_width=True):
                     if uni_id is not None:
                         toggle_favorite(uni_id)

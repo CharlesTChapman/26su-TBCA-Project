@@ -80,11 +80,11 @@ def render_favorites(api, student_id, favorites, origin_page, key_prefix, limit=
 
         with btn_col:
             remove_clicked = st.button(
-                "★ Remove", key=key_prefix + "_remove_" + str(fav["id"]),
+                "⭐ Remove", key=key_prefix + "_remove_" + str(fav["id"]),
                 use_container_width=True,
             )
             if remove_clicked:
-                requests.post(f"{api}/favorites/{student_id}/{fav['id']}", timeout=10)
+                requests.post(f"{api}/favorites/student/{student_id}/university/{fav['id']}", timeout=10)
                 st.rerun()
 
             details_clicked = st.button(
