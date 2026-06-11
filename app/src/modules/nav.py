@@ -80,6 +80,16 @@ def budget_manager_home_nav():
         "pages/20_Budget_Manager_Home.py", label="Budget Manager Home", icon="💰"
     )
 
+def budget_plan_details_nav():
+    st.sidebar.page_link(
+        "pages/21_Budget_Plan_Details.py", label="Budget Plan Details", icon="📈"
+    )
+
+def university_budget_details_nav():
+    st.sidebar.page_link(
+        "pages/22_University_Budget_Details.py", label="University Budget Details", icon="🏛️"
+    )
+
 
 # ---- Sidebar assembly -------------------------------------------------------
 
@@ -121,7 +131,8 @@ def SideBarLinks(show_home=False):
 
         if st.session_state["role"] == "budget_manager":
             budget_manager_home_nav()
-
+            budget_plan_details_nav()
+            university_budget_details_nav()
     # About link appears at the bottom for all roles
     about_page_nav()
 
