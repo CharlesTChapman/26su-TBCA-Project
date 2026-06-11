@@ -51,15 +51,31 @@ def show(value, fmt=None):
         return "—"
     return fmt(value) if fmt else value
 
+def staff_to_size(fte):
+    if fte is None:
+        return "—"
+    if fte < 1000:
+        return "Small"
+    elif fte < 5000:
+        return "Medium"
+    else:
+        return "Large"
+
+
+
 st.divider()
 st.header(uni["name"])
 st.caption(show(uni.get("location")))
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Est. fees per student", show(uni.get("per_student_fees"), lambda v: f"€{v:,.2f}"))
-col2.metric("Staff (FTE)", show(uni.get("staff_fte"), lambda v: f"{v:,.0f}"))
+col2.metric(
+    "University Size",
+    staff_to_size(uni.get("staff_fte")),
+    help="Based on full-time equivalent staff count: Small (<1,000), Medium (1,000–5,000), Large (5,000+)"
+)
 col3.metric("Highest degree", show(uni.get("highest_degree"),
-                                   lambda v: DEGREE_LEVELS.get(int(v), f"Level {v:g}")))
+                                lambda v: DEGREE_LEVELS.get(int(v), f"Level {v:g}")))
 
 st.write(f"**University ID:** {uni.get('id')}")
 st.write(f"**Location:** {show(uni.get('location'))}")
