@@ -1,7 +1,4 @@
-from configparser import Error
-
 from backend.db_connection import get_db
-from api.backend.university_explorer_routes import university_explorer_routes
 from flask import Blueprint, jsonify, request, current_app
 from backend.ml_models.modelrec import university_ranking_model
 from backend.utils import error_response
@@ -49,6 +46,6 @@ def get_country_coords(country):
         if row is None:
             return error_response("Country not found", 404)
         return jsonify(row), 200
-    except Error as e:
+    except Exception as e:
         current_app.logger.error(f"GET /country_coords/{country} failed: {e}")
         return error_response("Could not retrieve country coordinates")

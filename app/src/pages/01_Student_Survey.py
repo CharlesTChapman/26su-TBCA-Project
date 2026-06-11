@@ -115,7 +115,7 @@ if submitted:
             "majors": majors,
             "degree_level": degree_level,
             "country": country,
-            "proximity_km": list(proximity),
+            "proximity_km": proximity,
             "campus_type": campus_type,
             "campus_size": campus_size,
             "budget_usd": budget,

@@ -21,75 +21,15 @@ class university_ranking_model:
             rows = cursor.fetchall()
         if not rows:
             raise ValueError('No data found...')
+        for row in rows:
+            for field in ('name', 'city'):
+                if row[field]:
+                    try:
+                        row[field] = row[field].replace('ÃŸ', 'ß')
+                        row[field] = row[field].encode('latin1').decode('utf-8')
+                    except (UnicodeDecodeError, UnicodeEncodeError):
+                        pass
         return rows
-    
-    def _get_country_coords(self, country: str) -> tuple: # type: ignore
-        """Fetches the lat/long for a given country name from the country_coords table.
-        
-        Args:
-            country: country name as entered by the student
-
-        Returns:
-            Tuple (latitude, longitude) or None if not found.
-        """
-        with get_db().cursor(dictionary=True) as cursor:
-            cursor.execute(
-                'SELECT latitude, longitude FROM country_coords WHERE country = %s',
-                (country,)
-            )
-            row = cursor.fetchone()
-        if row is None:
-            current_app.logger.warning(f'No coordinates found for country: {country}')
-            return None
-        return (float(row['latitude']), float(row['longitude']))
-
-    def _filter_by_distance(self, model_df: pd.DataFrame, student_country: str, max_distance_km: float) -> pd.DataFrame:
-        """Filters universities to only those within max_distance_km of the student's city.
-        
-        Args:
-            model_df:         full university dataframe
-            student_country:     student's city or country from their survey
-            max_distance_km:  maximum distance in km
-
-        Returns:
-            Filtered dataframe containing only universities within range.
-        """
-        geolocator = Nominatim(user_agent="tbcacademics")
-        student_loc = geolocator.geocode(student_country)
-        if student_loc is None:
-            current_app.logger.warning(f'Could not geocode student city: {student_country}, skipping distance filter')
-            return model_df
-        student_coords = (student_loc.latitude, student_loc.longitude)
-
-        def within_range(uni_city: str) -> bool:
-            try:
-                uni_loc = geolocator.geocode(uni_city)
-                if uni_loc is None:
-                    return False
-                return geodesic(student_coords, (uni_loc.latitude, uni_loc.longitude)).km <= max_distance_km
-            except Exception:
-                return False
-
-        filtered = model_df[model_df['city'].apply(within_range)].reset_index(drop=True)
-        current_app.logger.info(f'Distance filter: {len(filtered)}/{len(model_df)} universities within {max_distance_km}km of {student_country}')
-        return filtered
-
-    def _haversine_km(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-        """Calculates the haversine distance in km between two lat/long points.
-        
-        Args:
-            lat1, lon1: coordinates of point 1
-            lat2, lon2: coordinates of point 2
-
-        Returns:
-            Distance in kilometers.
-        """
-        R = 6371.0
-        phi1, phi2 = math.radians(lat1), math.radians(lat2)
-        dphi = math.radians(lat2 - lat1)
-        dlambda = math.radians(lon2 - lon1)
-        a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
-        return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     def _get_country_coords(self, country: str) -> tuple: # type: ignore
         """Fetches the lat/long for a given country name from the country_coords table.
@@ -181,8 +121,8 @@ class university_ranking_model:
 
         universities = self._get_universities()
         model_df = pd.DataFrame(universities)
-        keeping_cols = ['per_student_fees', 'highest_degree', 'staff_fte']
-
+        keeping_cols = ['student_fees', 'highest_degree', 'staff_fte']
+        
         if student_country and max_distance_km:
             model_df = self._filter_by_distance(model_df, student_country, max_distance_km)
             if model_df.empty:
