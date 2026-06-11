@@ -29,11 +29,47 @@ def student_survey_nav():
     )
 
 
+def student_portal_nav():
+    st.sidebar.page_link(
+        "pages/02_Student_Data.py", label="My Portal", icon="🎓"
+    )
+
+
+def student_recommendations_nav():
+    st.sidebar.page_link(
+        "pages/03_Student_Data_Universities_List.py", label="University Recommendations", icon="🏫"
+    )
+
+
+def student_pros_cons_nav():
+    st.sidebar.page_link(
+        "pages/04_Student_Data_All_Pros_Cons.py", label="Pros & Cons", icon="⚖️"
+    )
+
+
+def student_favorites_nav():
+    st.sidebar.page_link(
+        "pages/05_Student_Data_All_Favorites.py", label="Favorites", icon="⭐"
+    )
+
+
+def student_user_info_nav():
+    st.sidebar.page_link(
+        "pages/07_Student_Data_User_Information.py", label="User Information", icon="👤"
+    )
+
+
 # ---- Role: labor_statistician -----------------------------------------------
 
 def labor_statistician_home_nav():
     st.sidebar.page_link(
         "pages/10_Labor_Statistician_Home.py", label="Labor Statistician Home", icon="📊"
+    )
+
+
+def labor_statistician_charts_nav():
+    st.sidebar.page_link(
+        "pages/11_Labor_Statistician_Charts.py", label="Explore the Data", icon="📈"
     )
 
 
@@ -44,6 +80,16 @@ def budget_manager_home_nav():
         "pages/20_Budget_Manager_Home.py", label="Budget Manager Home", icon="💰"
     )
 
+def budget_plan_details_nav():
+    st.sidebar.page_link(
+        "pages/21_Budget_Plan_Details.py", label="Budget Plan Details", icon="📈"
+    )
+
+def university_budget_details_nav():
+    st.sidebar.page_link(
+        "pages/22_University_Budget_Details.py", label="University Budget Details", icon="🏛️"
+    )
+
 
 # ---- Sidebar assembly -------------------------------------------------------
 
@@ -51,6 +97,10 @@ def SideBarLinks(show_home=False):
     """
     Renders sidebar navigation links based on the logged-in user's role.
     The role is stored in st.session_state when the user logs in on Home.py.
+    Every page in the active role's section is shown, so the user can move
+    freely between them. Click-through detail pages (e.g. a single university
+    or budget plan) are intentionally left out since they need a prior
+    selection to render.
     """
 
     # Logo appears at the top of the sidebar on every page
@@ -61,21 +111,28 @@ def SideBarLinks(show_home=False):
         st.session_state.authenticated = False
         st.switch_page("Home.py")
 
-    if show_home:
-        home_nav()
+    # Home link is shown on every page
+    home_nav()
 
     if st.session_state["authenticated"]:
 
         if st.session_state["role"] == "student":
             student_home_nav()
             student_survey_nav()
+            student_portal_nav()
+            student_recommendations_nav()
+            student_pros_cons_nav()
+            student_favorites_nav()
+            student_user_info_nav()
 
         if st.session_state["role"] == "labor_statistician":
             labor_statistician_home_nav()
+            labor_statistician_charts_nav()
 
         if st.session_state["role"] == "budget_manager":
             budget_manager_home_nav()
-
+            budget_plan_details_nav()
+            university_budget_details_nav()
     # About link appears at the bottom for all roles
     about_page_nav()
 

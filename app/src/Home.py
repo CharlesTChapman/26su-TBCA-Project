@@ -65,9 +65,9 @@ SideBarLinks(show_home=True)
 
 # Rotating text that transitions through a list of titles
 NAMES = [
-    "The Best Choice Academics 🎓",
-    "Think Before Committing Analytics 📊",
-    "True Budget Clarity Accounting 💶",
+    "The Best Choice Academics 🎓   ",
+    "Think Before Committing Analytics 📊   ",
+    "True Budget Clarity Accounting 💶   ",
 ]
 
 @st.fragment(run_every="5s")
