@@ -22,12 +22,25 @@ BIOS = {
         "linkedin": "https://www.linkedin.com/in/charlestchapman/",
     },
     "Bina": {
-        "image": "assets/dev_headshots/bina_bakhramova_headshot.png",
-        "role": "Machine Learning & Backend",
-        "bio": "Bina built the machine learning models powering the platform's "
-               "predictions, along with a large portion of the logic and backend.",
-        "linkedin": "https://www.linkedin.com/in/binafsha-bakhramova-616637267/",
-    },
+            "image": "assets/dev_headshots/bina_bakhramova_headshot.png",
+            "role": "Machine Learning & Backend",
+            "bio": "Bina built two of the platform's machine learning features end to end. "
+                "The first is the EU labor market forecasting tool, which predicts how "
+                "employment in different industries and countries is likely to shift year "
+                "over a year. She trained two linear regression models on Eurostat data "
+                "joined through an ISCED-NACE crosswalk, an employment-level model and an "
+                "employment-change model, stored them in MySQL, served them through Flask "
+                "API routes including averaging both into a single forecast, "
+                "and built the Streamlit interface for the labor statistician persona: an "
+                "interactive prediction tool and Plotly dashboards with an OLS-fit "
+                "scatter. The second is the budget manager feature, a demand-scoring model "
+                "that recommends how a university should reallocate program funding. It "
+                "fits employment trends per industry sector, computes graduate absorption "
+                "rates, and combines them into a z-scored demand signal that uses softmax "
+                "blending to suggest balanced funding shifts across programs.",
+            "linkedin": "https://www.linkedin.com/in/binafsha-bakhramova-616637267/",
+        },
+
     "Alyssa": {
         "image": "assets/dev_headshots/alyssa_haidar_headshot.png",
         "role": "Machine Learning & Backend",
