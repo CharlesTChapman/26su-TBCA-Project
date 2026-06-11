@@ -112,6 +112,7 @@ except Exception as e:
     logger.error(f"Could not load academic stats for university {uni_id}: {e}")
 
 student_fees = uni.get("student_fees")
+plan_amount = uni.get("student_fees") if student_fees else 0
 
 # Current Standing
 st.divider()
@@ -138,28 +139,61 @@ st.subheader("Save Budget Plan")
 manager = st.session_state.get("selected_manager", {})
 manager_id = manager.get("id")
 
+# Load existing plan for the selected university
+existing_plan = None
+if manager_id is not None:
+    try:
+        lookup = requests.get(
+            f"{API}/budget_plans",
+            params={"budget_manager_id": manager_id},
+            timeout=10,
+        )
+        if lookup.status_code == 200:
+            existing_plan = next(
+                (p for p in lookup.json() if p.get("university_id") == uni_id),
+                None,
+            )
+    except Exception as e:
+        logger.error(f"Could not load existing budget plans: {e}")
+
+# Default to the saved plan's amount when one exists, else student fees
+default_amount = (
+    int(existing_plan["total_amount"])
+    if existing_plan and existing_plan.get("total_amount") is not None
+    else (int(student_fees) if student_fees else 0)
+)
+
+# Refresh the input when the university changes
+arrived_via_view = st.session_state.pop("selected_plan_id", None) is not None
+if st.session_state.get("_plan_amount_uni") != uni_id or arrived_via_view:
+    st.session_state["_plan_amount_uni"] = uni_id
+    st.session_state["save_plan_amount"] = default_amount
+
 if manager_id is None:
     st.warning("Log in as a budget manager from the home page to save a plan.")
 else:
     plan_amount = st.number_input(
         "Budget amount for this plan (€)",
         min_value=0,
-        value=int(student_fees) if student_fees else 0,
         step=100_000,
         key="save_plan_amount",
     )
     if st.button("Save budget plan", type="primary"):
         try:
-            resp = requests.post(
-                f"{API}/budget_plans",
-                json={
-                    "university_id": uni_id,
-                    "budget_manager_id": manager_id,
-                    "total_amount": int(plan_amount),
-                },
-                timeout=10,
-            )
-            if resp.status_code == 201:
+            payload = {
+                "university_id": uni_id,
+                "budget_manager_id": manager_id,
+                "total_amount": int(plan_amount),
+            }
+            # Update the existing plan if there is one, otherwise create it.
+            if existing_plan is not None:
+                resp = requests.put(
+                    f"{API}/budget_plans/{existing_plan['id']}", json=payload, timeout=10)
+            else:
+                resp = requests.post(
+                    f"{API}/budget_plans", json=payload, timeout=10)
+
+            if resp.status_code in (200, 201):
                 st.success(
                     f"Saved budget plan for {selected_name} (€{int(plan_amount):,}).")
             else:
@@ -180,22 +214,12 @@ if not geo:
 st.divider()
 st.header(f"{selected_name} — Suggested Sector Reallocations")
 
-col_a, _ = st.columns([1, 3])
-with col_a:
-    program_budget = st.number_input(
-        "Total program budget (€)",
-        min_value=0,
-        value=12_000_000,
-        step=50_000,
-        help="Split across every major based on labor-market demand and enrollment.",
-    )
-
 recs = []
 n_students = 0
 try:
     r = requests.get(
         f"{API}/budget_recommendations/students",
-        params={"geo": geo, "total_budget": program_budget},
+        params={"geo": geo, "total_budget": plan_amount},
         timeout=15,
     )
     r.raise_for_status()
@@ -245,4 +269,4 @@ with st.container(border=True):
     if recs:
         st.divider()
         total_alloc = sum(_amount_raw(r) for r in recs)
-        st.caption(f"Allocated: €{total_alloc:,.0f} of €{program_budget:,.0f}")
+        st.caption(f"Allocated: €{total_alloc:,.0f} of €{plan_amount:,.0f}")
