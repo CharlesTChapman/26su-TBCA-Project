@@ -4,7 +4,6 @@ logger = logging.getLogger(__name__)
 import requests
 import streamlit as st
 
-import requests
 from modules.nav import SideBarLinks
 
 st.set_page_config(layout="wide")
@@ -132,17 +131,17 @@ else:
             st.error(f"Could not save the budget plan: {e}")
            
 # ---- Sector ML Model --------------------------------------------------
-COUNTRY_BY_UNIVERSITY = {
-    "KU Leuven": "BE",
-    "Ghent University": "BE",
-    "Université Libre de Bruxelles (ULB)": "BE",
-}
+# Country comes from the selected university's record (university.country).
+university = selected_name
+geo = uni.get("country")
+if not geo:
+    st.warning(
+        f"No country is on file for {university}, so labor-market budget "
+        "recommendations can't be generated."
+    )
+    st.stop()
 
-university = st.session_state.get("selected_university", "Unknown University")
-geo = COUNTRY_BY_UNIVERSITY.get(university, "BE")
-
-st.title("Budget Plan Details")
-st.header(f"{university} Budget Plan Details")
+st.header(f"{university} Suggested Sector Reallocations")
 st.divider()
 
 col_a, _ = st.columns([1, 3])

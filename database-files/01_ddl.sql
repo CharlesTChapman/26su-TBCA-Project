@@ -30,7 +30,8 @@ CREATE TABLE university (
     web_pages      VARCHAR(50),
     total_students   FLOAT,
     latitude         FLOAT,
-    longitude        FLOAT
+    longitude        FLOAT,
+    country          VARCHAR(2)
 );
 
 CREATE TABLE budget_manager (
