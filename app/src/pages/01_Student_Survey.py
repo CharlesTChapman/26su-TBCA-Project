@@ -80,9 +80,14 @@ with st.form("student_survey", clear_on_submit=False):
     
     # ---- Financial preferences ----------------------------------------------
     st.subheader("Financial Preferences")
+    filter_by_budget = st.toggle("Filter universities by budget?", value=True,
+                                help="Turn off to see all universities regardless of fees")
+
     budget = st.number_input("What is your estimated budget for tuition per year? (EUR)",
-                            min_value=0, max_value=100000, value=20000, step=1000,
-                            help="Compared against estimated per-student fees from institutional data. Actual fees may vary by nationality and student status.")
+                            min_value=0, max_value=10000, value=2000, step=100,
+                            help="Compared against estimated per-student fees from institutional data. Actual fees may vary by nationality and student status.",
+                            disabled=not filter_by_budget)
+
     financial_aid = st.toggle("Are you interested in financial aid?",
                             help="Toggle if you are interested in receiving financial aid")
 
@@ -92,7 +97,7 @@ with st.form("student_survey", clear_on_submit=False):
 # ---- Results ----------------------------------------------------------------
 if submitted:
     survey_data = {
-        "student_budget": float(budget),
+        "student_budget": float(budget) if filter_by_budget else None,
         "student_degree_level": degree_map[degree_level],
         "student_size": size_map[campus_size],
         "student_major": majors,

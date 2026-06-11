@@ -131,7 +131,7 @@ class university_ranking_model:
                 current_app.logger.warning('No universities found within budget, returning empty result')
                 return {}
             current_app.logger.info(f'Budget filter: {len(model_df)} universities within budget of {budget}')
-        
+
         X_mat = model_df[keeping_cols].to_numpy()
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X_mat)
