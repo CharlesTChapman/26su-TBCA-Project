@@ -73,6 +73,12 @@ def labor_statistician_charts_nav():
     )
 
 
+def labor_statistician_user_info_nav():
+    st.sidebar.page_link(
+        "pages/12_Labor_Statistician_User_Information.py", label="User Information", icon="👤"
+    )
+
+
 # ---- Role: budget_manager ---------------------------------------------------
 
 def budget_manager_home_nav():
@@ -88,6 +94,11 @@ def budget_plan_details_nav():
 def university_budget_details_nav():
     st.sidebar.page_link(
         "pages/22_University_Budget_Details.py", label="University Budget Details", icon="🏛️"
+    )
+
+def budget_manager_user_info_nav():
+    st.sidebar.page_link(
+        "pages/23_Budget_Manager_User_Information.py", label="User Information", icon="👤"
     )
 
 
@@ -128,11 +139,13 @@ def SideBarLinks(show_home=False):
         if st.session_state["role"] == "labor_statistician":
             labor_statistician_home_nav()
             labor_statistician_charts_nav()
+            labor_statistician_user_info_nav()
 
         if st.session_state["role"] == "budget_manager":
             budget_manager_home_nav()
             budget_plan_details_nav()
             university_budget_details_nav()
+            budget_manager_user_info_nav()
     # About link appears at the bottom for all roles
     about_page_nav()
 
