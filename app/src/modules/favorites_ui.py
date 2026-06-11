@@ -6,8 +6,8 @@ import streamlit as st
 # Dropdown labels
 FEE_LOW = "Annual Student Fee (low → high)"
 FEE_HIGH = "Annual Student Fee (high → low)"
-NAME_AZ = "Name (A–Z)"
-NAME_ZA = "Name (Z–A)"
+NAME_AZ = "Name (A to Z)"
+NAME_ZA = "Name (Z to A)"
 SORT_OPTIONS = [FEE_LOW, FEE_HIGH, NAME_AZ, NAME_ZA]
 
 def format_fees(value):
