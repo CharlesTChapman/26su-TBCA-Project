@@ -63,6 +63,11 @@ def student_user_info_nav():
 
 def labor_statistician_home_nav():
     st.sidebar.page_link(
+        "pages/09_Labor_Statistician_Portal.py", label="Labor Statistician Home", icon="👤"
+    )
+
+def labor_statistician_home_nav():
+    st.sidebar.page_link(
         "pages/10_Labor_Statistician_Home.py", label="Labor Statistician Home", icon="📊"
     )
 

@@ -50,12 +50,9 @@ COUNTRY_NAMES = {
 sectors = sorted(df['sector'].unique())
 countries = sorted(df['geo'].unique())
 
-
-
-# Prediction Widget
 st.subheader('Run a Prediction')
 st.caption('Pick a country and sector once. Inputs auto-fill from the most recent '
-           'year, then both models run together.')
+           'year, then both models run and combine into a single estimate.')
 
 col1, col2 = st.columns(2)
 with col1:
@@ -64,7 +61,7 @@ with col1:
 with col2:
     pred_sector = st.selectbox('Sector', sectors, key='pred_sector')
 
-# most recent row for that country/sector drives the defaults for both models
+
 match = df[(df['geo'] == pred_country) & (df['sector'] == pred_sector)].sort_values('time')
 row = match.iloc[-1] if len(match) else None
 default_lag = float(row['employment_thousands']) if row is not None else 715.0
@@ -82,9 +79,6 @@ with c3:
     year = st.number_input('Year', min_value=2013, max_value=2030,
                            value=default_year, step=1, key='year')
 
-st.caption("Model 1 (level) uses last year's employment. Model 2 (change) also uses "
-           "graduates and year. Prior employment is shared across both.")
-
 if st.button('Run Prediction', type='primary'):
     try:
         lvl_resp = requests.get(f'{API}/labor/predict/level/{emp_lag}', timeout=10)
@@ -98,21 +92,21 @@ if st.button('Run Prediction', type='primary'):
     else:
         level = lvl_resp.json()['predicted_employment_thousands']
         change = chg_resp.json()['predicted_change_thousands']
+
+        model1_pred = level
+        model2_pred = emp_lag + change
+        combined = (model1_pred + model2_pred) / 2
+        delta = combined - emp_lag
+
         country_label = COUNTRY_NAMES.get(pred_country, pred_country)
-        m1, m2 = st.columns(2)
-        m1.metric(
-            'Model 1: Employment next year (thousands)',
-            f"{level:,.1f}",
-            delta=f"{level - emp_lag:+,.1f}",
-        )
-        m2.metric(
-            'Model 2: Employment next year (thousands)',
-            f"{emp_lag + change:,.1f}",
-            delta=f"{change:+,.1f}",
+        st.metric(
+            'Predicted employment next year (thousands)',
+            f"{combined:,.1f}",
+            delta=f"{delta:+,.1f}",
         )
         st.caption(
-            f"Both numbers are predicted employment for {country_label} / "
-            f"{pred_sector} next year. The arrow is the change from last year "
+            f"Predicted employment for {country_label} / {pred_sector} next year, "
+            f"The arrow is the change from last year "
             f"({emp_lag:,.1f}k): green means the sector is growing, red means "
             f"it's shrinking."
         )
