@@ -336,7 +336,7 @@ def update_survey_form(student_id):
                       student_size          = COALESCE(%s, student_size),
                       student_major         = COALESCE(%s, student_major),
                       student_country       = COALESCE(%s, student_country),
-                      student_proximity_min = COALESCE(%s, student_proximity_min),
+                      student_proximity_min = COALESCE(%s, 0),
                       student_proximity_max = COALESCE(%s, student_proximity_max),
                       student_campus_type   = COALESCE(%s, student_campus_type),
                       student_financial_aid = COALESCE(%s, student_financial_aid),

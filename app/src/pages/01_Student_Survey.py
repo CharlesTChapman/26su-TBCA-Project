@@ -102,7 +102,8 @@ if submitted:
         "student_size": size_map[campus_size],
         "student_major": majors,
         "student_country": country,
-        "student_proximity": int(proximity),
+        "student_proximity_min": 0,
+        "student_proximity_max": int(proximity),
         "student_campus_type": campus_type,
         "student_financial_aid": bool(financial_aid),
     }

@@ -23,6 +23,10 @@ student_survey = student_survey.json()
 
 rec_response = requests.get(
     f"{API}/modelrec/predict/all/{student_survey['student_budget']}/{student_survey['student_degree_level']}/{student_survey['student_size']}",
+    params={
+        "country": student_survey.get("student_country"),
+        "max_km": student_survey.get("student_proximity_max")
+    },
     timeout=60
 )
 if rec_response.status_code != 200:
