@@ -156,8 +156,12 @@ Four computer science students at Northeastern University.
 
 ## Team Contributions
 
-### **T**yler
-I contributed...
+### **T**yler Gladu
+Tyler contributed mainly to the frontend and API layer of TBCA. On the UI side, he built the majority of the student persona experience. He included a survey page, connecting results from the ML university ranking model, created favorites functionality with a sorting option, and implemented a pros and cons feature where students can write, edit, and add notes about each university. Also, he built out the Budget Manager dashboard and reorganized several elements of the Labor Statistician UI by splitting charts and prediction results into seperate pages. In addition, he also added user portals to each persona so that users can edit personal information pertaining to them. 
+
+On the backend, Tyler wrote 50% of the API layer in Flask. He created GET, POST, PUT, and DELETE requests for student, budget manager, and labor statician data. Earlier on in the project, he also created wireframes through the use of GoodNotes, which allowed him to build template pages for each persona within our application. He also assisted Charles, with the ER and DDL models, which helped brainstorm entities and attributes for our application. 
+
+Outside of the code, Tyler wrote the student user persona and researched data source such as Eurostat API and suggested it to the team. He also built the majority of the team's README, which covers how to clone the repo, initialize Docker containers, and open the app in browser.
 
 
 
