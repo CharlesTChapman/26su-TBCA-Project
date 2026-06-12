@@ -166,10 +166,14 @@ I contributed...
 
 
 
-### **C**harlie
-I contributed...
+### **C**harles Chapman
+Across the four phases of the project, Charles Chapman served as the team's data-modeling lead, API designer, and repository maintainer while supporting front-end and ML work.
 
-
+- **Phase 1:** Brainstormed topic ideas, explored Eurostat and other datasets, and completed a user persona.
+- **Phase 2:** Led the data models (with Tyler's help): built ER diagrams in LucidChart and relational models in DBDesigner, wrote the DDL from the global relational model, and supported Tyler on wireframes.
+- **Phase 3:** Led the API design, standardizing the REST API Matrix and building the CRUD routes across the core resources (universities, students, favorites, and pros/cons), and supported Tyler on Streamlit screens.
+- **Phase 4:** Led the Budget Manager persona's UI and features, including the university stats pages and saving budget plans to the database; partnered with Bina on an ML model for suggested budget allocations based on labor statistics; assisted Tyler and Alyssa with Student-persona features; and customized the Streamlit UI with dark mode and a rotating home-screen title.
+- **Throughout:** Maintained the GitHub repository by owning the Git workflow, testing each PR locally before merging, resolving merge conflicts, and protecting the `main` branch.
 
 ### **A**lyssa
 I contributed...
