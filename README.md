@@ -161,10 +161,36 @@ I contributed...
 
 
 
-### **B**ina
-I contributed...
+### **B**inafsha Bakhramova
+Bina contributed in:
 
+#### Labor market prediction
+ 
+* Wrote the User Persona and researched potential datasets to use for the Labor Statistican.
+* Pulled two Eurostat datasets: employment by NACE sector (`nama_10_a64_e`) and tertiary graduates by ISCED field (`educ_uoe_grad02`), covering all 27 EU states from 2012 to 2023.
+* Built the ISCED-NACE crosswalk by hand: a dictionary that maps two classification systems that don't naturally match up.
+* Merged both datasets into one panel of ~2,354 rows (27 countries, 8 sectors, 2012–2023).
+* Created lag features and year-over-year change features, then standardized the inputs with `StandardScaler`.
+* Trained two linear regressions. Model 1 predicts the employment *level* from the prior year's employment. Model 2 predicts the year-over-year *change* from the year, graduate count, and prior-year employment.
+* Switched from a random train/test split to a temporal one (train 2012–2020, test 2021–2023) after she flagged that random splitting is wrong for time series.
+* Worked out that Model 1's near-perfect R² was just the lag dominating, not real predictive skill, so she added prior-year employment to Model 2 to give it more to work with. Model 2 landed around R² = 0.21.
+* Computed the absorption rate (employment change ÷ prior-year graduates) as a descriptive metric.
 
+#### From notebook to backend
+ 
+* Turned the whole notebook pipeline into a production backend.
+* Pulled out the model weights (coefficients, intercepts, scaler means and scales) and stored them in MySQL (`model1_params`, `model2_params`).
+* Wrote `labor.py` with two DB-backed prediction functions, plus `train.py` as a retraining pipeline.
+* Built the Labor Statistician dashboard in Streamlit: Plotly charts in tabs and a prediction widget that auto-fills the inputs from the latest data for whatever country and sector you pick.
+* Debugged a pile of small things along the way: files that won't import because they start with a digit, `get_db` vs `db` imports, the cursor needing `dictionary=True`, apostrophe syntax errors, the working-age population fix, and SSH auth for GitHub.
+
+#### Budget manager persona
+ 
+* Built `budget.py`, the demand-scoring reallocation model: an OLS employment trend per sector plus the graduate absorption rate, combined into a z-scored demand signal and run through a softmax to produce budget shares.
+* Debugged a flattened-indentation paste, a missing `register_blueprint` call, and a tuple-vs-dict cursor mismatch (fixed by naming the columns explicitly in `_load_labor_df`).
+* Got the route returning JSON recommendations (for Belgium: CS underfunded +595K, Business balanced +61K, Engineering overfunded −655K).
+* Added `budget_plan_details_nav()` and `university_budget_details_nav()` to `nav.py`.
+* Found that the favorites table had zero seeded rows, which explained why "Student Favorites" was always showing zero.
 
 ### **C**harles Chapman
 Across the four phases of the project, Charles Chapman served as the team's data-modeling lead, API designer, and repository maintainer while supporting front-end and ML work.
