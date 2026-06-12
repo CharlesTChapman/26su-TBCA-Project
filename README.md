@@ -153,3 +153,23 @@ Four computer science students at Northeastern University.
 | Charles Chapman   | User Interface, Routing, and Database Design and Implementation     |
 | Bina Bakhramova   | Machine Learning, Implementation, and Routing Models                |
 | Alyssa Haidar     | Machine Learning, Implementation, and Routing Models                |
+
+## Team Contributions
+
+### **T**yler
+I contributed...
+
+
+
+### **B**ina
+I contributed...
+
+
+
+### **C**harlie
+I contributed...
+
+
+
+### **A**lyssa
+I contributed...
