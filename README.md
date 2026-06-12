@@ -171,5 +171,23 @@ I contributed...
 
 
 
-### **A**lyssa
-I contributed...
+### **A**lyssa Haidar
+Alyssa built and owned the university ranking model end-to-end across all phases, from initial data cleaning through deployment and final optimization.
+
+**Data & Modeling**
+- Pulled and merged two datasets (Hipo University Domains API and ETER budget stats) and wrote parsing logic for ETER's original Excel format
+- Handled encoding issues with European university names
+- Converted the model into a `university_ranking_model` Python class in `modelrec.py` backed by a SQL database
+- Wrote the two routes in `modelrec_routes.py`
+- Replaced raw institutional fee totals with a proper `per_student_fees` estimate using enrollment data from ETER
+- Added a hard budget filter so universities above a student's budget are excluded before cosine similarity runs, and used the `REV.TUITFEES` flag to ensure free universities always pass
+- Replaced a broken geopy implementation making 418 live API calls per request with pre-computed coordinates and haversine distance, making the distance filter actually usable
+
+**Frontend**
+- Built out the student portal and survey pages
+- Swapped the country text input for a 27-country dropdown and simplified the distance slider to a single max value
+- Fixed the "View More" page incorrectly capping results at 50
+- Replaced raw Staff FTE display with a Small/Medium/Large size label
+- Updated the major field from free-text to a dropdown
+- Fixed a broken import crashing the entire API on startup
+- Resolved a double-encoded UTF-8 bug mangling university names with special characters
