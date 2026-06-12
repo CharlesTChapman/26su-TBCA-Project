@@ -156,8 +156,32 @@ Four computer science students at Northeastern University.
 
 ## Team Contributions
 
-### **T**yler
-I contributed...
+### **T**yler Gladu
+
+Phase I
+
+- Wrote the student user persona and helped with other user stories
+- Researched and proposed the Eurostat API as a candidate data source for the project
+
+Phase II
+
+- Designed wireframes in GoodNotes for the home page and each user persona, creating several pages for each
+- Assisted with the ER and DDL models, brainstorming entities and attributes for the database schema
+
+Phase III
+
+- Built the student survey page and wired it through the API to the ML recommendation model, producing a personalized university ranking
+- Built the Budget Manager dashboard and plan detail pages
+- Helped Charlie create an API Matrix to help map our frontend to our backend through the use of http requests and routes
+
+Phase IV
+
+- Added favorites functionality to the student results page, including sorting options
+- Implemented a pros and cons feature where students can write, edit, and add notes for each university
+- Reorganized the Labor Statistician UI by splitting charts and prediction results onto separate pages
+- Added user portals to all three personas so users can update their personal information
+- Wrote 50% of total university routes, adding GET, POST, PUT, and DELETE endpoints for student, budget manager, and labor statistician data
+- Built the project README, covering repo setup, Docker initialization, and how to open the app in browser
 
 
 
